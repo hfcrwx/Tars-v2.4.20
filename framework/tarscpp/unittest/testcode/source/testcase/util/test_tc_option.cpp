@@ -1,57 +1,74 @@
-#include "gtest/gtest.h"
-#include "servant/Application.h"
-#include "TarsTest/TestcaseServer/RPCTest.h"
-#include "servant/AdminF.h"
 #include "TarsServantName.h"
+#include "TarsTest/TestcaseServer/RPCTest.h"
+#include "gtest/gtest.h"
+#include "servant/AdminF.h"
+#include "servant/Application.h"
 
-
-#include "util/tc_option.h"
-#include "util/tc_common.h"
-#include <iterator>
 #include <iostream>
+#include <iterator>
+#include "util/tc_common.h"
+#include "util/tc_option.h"
 // #include <sys/time.h>
 
 using namespace std;
 using namespace tars;
 using namespace TarsTest;
 
+TEST(TarsUtilTestcase, UT_TC_Option) {
+  char *g_array_argv[6][3] = {
+      {
+          (char *)"test",
+          (char *)"--get=0",
+          (char *)"--bit=1",
+      },
+      {
+          (char *)"test",
+          (char *)"--set=98",
+          (char *)"--bit=1",
+      },
+      {
+          (char *)"test",
+          (char *)"--clear=99",
+          (char *)"--bit=1",
+      },
+      {
+          (char *)"test",
+          (char *)"--clear4all",
+          (char *)"--bit=1",
+      },
+      {
+          (char *)"test",
+          (char *)"--dump=./bitmap.dump",
+          (char *)" ",
+      },
+      {
+          (char *)"test",
+          (char *)"--load=./bitmap.dump",
+          (char *)" ",
+      },
+  };
 
+  TC_Option *op;
 
-TEST(TarsUtilTestcase, UT_TC_Option)
-{
-    char * g_array_argv[6][3] = {
-        { (char*)"test", (char*)"--get=0", (char*)"--bit=1",  },
-        { (char*)"test", (char*)"--set=98", (char*)"--bit=1",   },
-        { (char*)"test", (char*)"--clear=99", (char*)"--bit=1", },
-        { (char*)"test", (char*)"--clear4all", (char*)"--bit=1", },
-        { (char*)"test", (char*)"--dump=./bitmap.dump", (char*)" ",  },
-        { (char*)"test", (char*)"--load=./bitmap.dump", (char*)" ",  },
-    };    
-    
-    TC_Option *op;
-    
-    for(unsigned int i=0; i<(sizeof(g_array_argv)/sizeof(char*[3])); i++)
-    {
-        char **argv = g_array_argv[i];
-        int argc = (sizeof(g_array_argv[i]) / sizeof(char *));
-        
-        //cout << (sizeof(g_array_argv[i]) / sizeof(char *)) << endl;
-        //cout << i << "  " << argv[1] << endl;
-        op = new TC_Option();
-        op->decode(argc, argv);
+  for (unsigned int i = 0; i < (sizeof(g_array_argv) / sizeof(char * [3]));
+       i++) {
+    char **argv = g_array_argv[i];
+    int argc = (sizeof(g_array_argv[i]) / sizeof(char *));
 
-        map<string, string> mp = op->getMulti();
+    // cout << (sizeof(g_array_argv[i]) / sizeof(char *)) << endl;
+    // cout << i << "  " << argv[1] << endl;
+    op = new TC_Option();
+    op->decode(argc, argv);
 
-        cout << "map:" << endl;
-        cout << TC_Common::tostr(mp) << endl;
+    map<string, string> mp = op->getMulti();
 
-        vector<string> d = op->getSingle();
-        cout << "vector:" << endl;
-        cout << TC_Common::tostr(d) << endl;
+    cout << "map:" << endl;
+    cout << TC_Common::tostr(mp) << endl;
 
-		cout << op->getValue("abc") << endl;
-	}
+    vector<string> d = op->getSingle();
+    cout << "vector:" << endl;
+    cout << TC_Common::tostr(d) << endl;
 
+    cout << op->getValue("abc") << endl;
+  }
 }
-
-

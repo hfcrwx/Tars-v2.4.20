@@ -1,391 +1,355 @@
 ﻿/**
- * Tencent is pleased to support the open source community by making Tars available.
+ * Tencent is pleased to support the open source community by making Tars
+ * available.
  *
  * Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except 
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  * https://opensource.org/licenses/BSD-3-Clause
  *
- * Unless required by applicable law or agreed to in writing, software distributed 
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the 
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 #ifndef __TARS_OBJECT_PROXY_H_
 #define __TARS_OBJECT_PROXY_H_
 
-#include "servant/Communicator.h"
-#include "servant/Message.h"
 #include "servant/AdapterProxy.h"
-#include "servant/EndpointInfo.h"
-#include "servant/EndpointF.h"
 #include "servant/AppProtocol.h"
-#include "servant/StatReport.h"
+#include "servant/Communicator.h"
+#include "servant/EndpointF.h"
+#include "servant/EndpointInfo.h"
 #include "servant/Global.h"
+#include "servant/Message.h"
+#include "servant/StatReport.h"
 #include "util/tc_timeout_queue_noid.h"
 
-namespace tars
-{
+namespace tars {
 class EndpointManager;
 
 ///////////////////////////////////////////////////////////////////
 /**
  * socket选项
  */
-struct SocketOpt
-{
-	int level;
+struct SocketOpt {
+  int level;
 
-	int optname;
+  int optname;
 
-	const void *optval;
+  const void* optval;
 
-	SOCKET_LEN_TYPE optlen;
+  SOCKET_LEN_TYPE optlen;
 };
 
 ///////////////////////////////////////////////////////////////////
 /**
  * 每个objectname在每个客户端网络线程中有唯一一个objectproxy
- * 
+ *
  */
-class ObjectProxy : public TC_HandleBase, public TC_ThreadMutex
-{
-public:
-    /**
-     * 构造函数
-     * @param pCommunicatorEpoll
-     * @param sObjectProxyName
-     * @param setName 指定set调用的setid
-     */
-    ObjectProxy(CommunicatorEpoll * pCommunicatorEpoll, const string & sObjectProxyName, const string& setName="");
+class ObjectProxy : public TC_HandleBase, public TC_ThreadMutex {
+ public:
+  /**
+   * 构造函数
+   * @param pCommunicatorEpoll
+   * @param sObjectProxyName
+   * @param setName 指定set调用的setid
+   */
+  ObjectProxy(CommunicatorEpoll* pCommunicatorEpoll,
+              const string& sObjectProxyName, const string& setName = "");
 
-    /**
-     * 析构函数
-     */
-    ~ObjectProxy();
+  /**
+   * 析构函数
+   */
+  ~ObjectProxy();
 
-    /**
-     * 加载locator
-     */
-    int loadLocator();
-	
-    /**
-     * 方法调用
-     * @param req
-     * @return int
-     */
-    void invoke(ReqMessage *  msg);
+  /**
+   * 加载locator
+   */
+  int loadLocator();
 
-    /**
-     * 发送积攒在obj的数据
-     */
-    void doInvoke();
+  /**
+   * 方法调用
+   * @param req
+   * @return int
+   */
+  void invoke(ReqMessage* msg);
 
-	/**
-     *
-     * @param active
-     * @param inactive
-     */
-	void onNotifyEndpoints(const set<EndpointInfo> & active,const set<EndpointInfo> & inactive);
+  /**
+   * 发送积攒在obj的数据
+   */
+  void doInvoke();
 
-    /**
-     * 设置协议解析器
-     * @return UserProtocol&
-     */
-    void setProxyProtocol(const ProxyProtocol& protocol);
+  /**
+   *
+   * @param active
+   * @param inactive
+   */
+  void onNotifyEndpoints(const set<EndpointInfo>& active,
+                         const set<EndpointInfo>& inactive);
 
-    /**
-     * 获取协议解析器
-     * @return ProxyProtocol&
-     */
-    ProxyProtocol& getProxyProtocol();
+  /**
+   * 设置协议解析器
+   * @return UserProtocol&
+   */
+  void setProxyProtocol(const ProxyProtocol& protocol);
 
-    /**
-    *设置套接口选项
-    */
-    void setSocketOpt(int level, int optname, const void *optval, SOCKET_LEN_TYPE optlen);
+  /**
+   * 获取协议解析器
+   * @return ProxyProtocol&
+   */
+  ProxyProtocol& getProxyProtocol();
 
-    /**
-     * 获取套接字选项
-     */
-    vector<SocketOpt>& getSocketOpt();
+  /**
+   *设置套接口选项
+   */
+  void setSocketOpt(int level, int optname, const void* optval,
+                    SOCKET_LEN_TYPE optlen);
 
-    /**
-     * 设置PUSH类消息的callback对象
-     * @param cb
-     */
-    void setPushCallbacks(const ServantProxyCallbackPtr& cb);
+  /**
+   * 获取套接字选项
+   */
+  vector<SocketOpt>& getSocketOpt();
 
-    /**
-     * 获取PUSH类消息的callback对象
-     */
-    ServantProxyCallbackPtr getPushCallback();
+  /**
+   * 设置PUSH类消息的callback对象
+   * @param cb
+   */
+  void setPushCallbacks(const ServantProxyCallbackPtr& cb);
 
-    /**
-     * connected
-     */
-	void onConnect(AdapterProxy *adapterProxy);
+  /**
+   * 获取PUSH类消息的callback对象
+   */
+  ServantProxyCallbackPtr getPushCallback();
 
-	/**
-     * 获取所有的adapter
-     */
-    void mergeStat(map<StatMicMsgHead, StatMicMsgBody> & mStatMicMsg);
+  /**
+   * connected
+   */
+  void onConnect(AdapterProxy* adapterProxy);
 
-    /**
-     * 检查Obj的队列超时
-     */
-    void doTimeout();
+  /**
+   * 获取所有的adapter
+   */
+  void mergeStat(map<StatMicMsgHead, StatMicMsgBody>& mStatMicMsg);
 
-    /**
-     * 获取CommunicatorEpoll*
-     */
-    inline CommunicatorEpoll * getCommunicatorEpoll()
-    {
-        return _communicatorEpoll;
+  /**
+   * 检查Obj的队列超时
+   */
+  void doTimeout();
+
+  /**
+   * 获取CommunicatorEpoll*
+   */
+  inline CommunicatorEpoll* getCommunicatorEpoll() {
+    return _communicatorEpoll;
+  }
+
+  /**
+   * 获取object名称
+   * @return const string&
+   */
+  inline const string& name() const { return _name; }
+
+  /**
+   * address
+   * @return
+   */
+  inline const string& hash() const { return _hash; }
+
+  /**
+   * address
+   * @return
+   */
+  inline const string& address() const { return _address; }
+
+  /**
+   * reconnect
+   * @param second
+   */
+  inline void reconnect(int second) { _reConnectSecond = second; }
+
+  /**
+   * reconnect
+   * @param second
+   */
+  inline int reconnect() { return _reConnectSecond; }
+
+  /**
+   * 判断此obj是否走按set规则调用流程，如果是直连方式，即使服务端是启用set的，也不认为是按set规则调用的
+   */
+  bool isInvokeBySet() const { return _isInvokeBySet; }
+
+  /**
+   * 获取按set规则调用的set名称
+   */
+  const string& getInvokeSetName() const { return _invokeSetId; }
+
+  /**
+   * 获取连接超时时间
+   * @return int
+   */
+  inline int getConTimeout() { return _conTimeout; }
+
+  /**
+   * 设置连接超时时间
+   */
+  inline void setConTimeout(int conTimeout) { _conTimeout = conTimeout; }
+
+  /**
+   * 超时策略获取和设置
+   * @return CheckTimeoutInfo&
+   */
+  inline CheckTimeoutInfo& checkTimeoutInfo() { return _checkTimeoutInfo; }
+
+  /**
+   * 获取servantproxy
+   */
+  inline ServantProxy* getServantProxy() { return _servantProxy; }
+
+  /**
+   * 获取servantproxy
+   */
+  inline ServantProxy* getRootServantProxy() {
+    if (_servantProxy->_rootPrx) {
+      return _servantProxy->_rootPrx.get();
     }
+    return _servantProxy;
+  }
 
-    /**
-     * 获取object名称
-     * @return const string&
-     */
-    inline const string & name() const
-    {
-        return _name;
-    }
+  /**
+   * 设置servantproxy
+   */
+  inline void setServantProxy(ServantProxy* pServantProxy) {
+    _servantProxy = pServantProxy;
+  }
 
-	/**
-	 * address
-	 * @return
-	 */
-	inline const string &hash() const
-	{
-		return _hash;
-	}
+  /**
+   *
+   * @return
+   */
+  inline EndpointManager* getEndpointManager() { return _endpointManger.get(); }
 
-    /**
-     * address
-     * @return
-     */
-    inline const string &address() const
-    {
-    	return _address;
-    }
+  /**
+   * get all adapter proxy
+   * @return
+   */
+  const vector<AdapterProxy*>& getAdapters();
 
-    /**
-     * reconnect
-     * @param second
-     */
-    inline void reconnect(int second)
-	{
-		_reConnectSecond = second;
-	}
+  /**
+   *
+   * @param ep
+   */
+  void onSetInactive(const EndpointInfo& ep);
 
-	/**
-	 * reconnect
-	 * @param second
-	 */
-	inline int reconnect()
-	{
-		return _reConnectSecond;
-	}
+  /**
+   * 完成一个包的调用(正常返回或者超时)
+   * @param ep
+   */
+  void finishInvoke(ReqMessage* msg, AdapterProxy* adapterProxy);
 
-	/**
-     * 判断此obj是否走按set规则调用流程，如果是直连方式，即使服务端是启用set的，也不认为是按set规则调用的
-     */
-    bool isInvokeBySet() const
-    {
-        return _isInvokeBySet;
-    }
+ protected:
+  /**
+   * 处理请求异常
+   *
+   */
+  void doInvokeException(ReqMessage* msg);
 
-    /**
-     * 获取按set规则调用的set名称
-     */
-    const string& getInvokeSetName() const
-    {
-        return _invokeSetId;
-    }
+  void prepareConnection(AdapterProxy* adapterProxy);
 
-    /**
-     * 获取连接超时时间
-     * @return int
-     */
-    inline int getConTimeout()
-    {
-        return _conTimeout;
-    }
+ private:
+  /*
+   * 客户端网络线程的指针
+   */
+  CommunicatorEpoll* _communicatorEpoll;
 
-    /**
-     * 设置连接超时时间
-     */
-    inline void setConTimeout(int conTimeout)
-    {
-        _conTimeout = conTimeout;
-    }
+  /*
+   * [obname]#hash@tcp -h xxxx -p xxx
+   */
+  string _name;
 
-    /**
-     * 超时策略获取和设置
-     * @return CheckTimeoutInfo&
-     */
-    inline CheckTimeoutInfo& checkTimeoutInfo()
-    {
-        return _checkTimeoutInfo;
-    }
+  /**
+   * obname#[hash]@tcp -h xxxx -p xxx
+   * ever hash has one connection
+   */
+  string _hash;
 
-    /**
-     * 获取servantproxy
-     */
-    inline ServantProxy * getServantProxy()
-    {
-        return _servantProxy;
-    }
+  /**
+   * obname#hash@[tcp -h xxxx -p xxx]
+   * ever hash has one connection
+   */
+  string _address;
 
-	/**
-	 * 获取servantproxy
-	 */
-	inline ServantProxy * getRootServantProxy()
-	{
-		if(_servantProxy->_rootPrx)
-		{
-			return _servantProxy->_rootPrx.get();
-		}
-		return _servantProxy;
-	}
+  /**
+   * obj full name
+   */
+  string _sObjectProxyName;
 
-    /**
-     * 设置servantproxy
-     */
-    inline void setServantProxy(ServantProxy * pServantProxy)
-    {
-        _servantProxy = pServantProxy;
-    }
+  /*
+   * 按set规则调用的set名称
+   */
+  string _invokeSetId;
 
-    /**
-     *
-     * @return
-     */
-	inline EndpointManager* getEndpointManager()
-	{
-    	return _endpointManger.get();
-	}
+  /*
+   * 是否是按set规则调用
+   */
+  bool _isInvokeBySet;
 
-    /**
-     * get all adapter proxy
-     * @return
-     */
-	const vector<AdapterProxy*> & getAdapters();
+  /*
+   * 是否调用了taf_set_protocol设置过proxy的协议函数，
+   * 设置过了就不在设置
+   */
+  bool _hasSetProtocol;
 
-	/**
-	 *
-	 * @param ep
-	 */
-	void onSetInactive(const EndpointInfo& ep);
+  /*
+   * 请求和响应的协议解析器
+   */
+  ProxyProtocol _proxyProtocol;
 
-	/**
-	 * 完成一个包的调用(正常返回或者超时)
-	 * @param ep
-	 */    
-    void finishInvoke(ReqMessage * msg, AdapterProxy *adapterProxy);
-protected:
+  /*
+   * 连接超时的时间
+   */
+  int _conTimeout;
 
-	/**
-	 * 处理请求异常
-	 *
-	 */
-	void doInvokeException(ReqMessage * msg);
+  /**
+   * reconnect, 0: not reconnect
+   */
+  int _reConnectSecond = 0;
 
-    void prepareConnection(AdapterProxy *adapterProxy);
-private:
-    /*
-     * 客户端网络线程的指针
-     */
-    CommunicatorEpoll *                   _communicatorEpoll;
+  /*
+   * 超时控制策略信息
+   */
+  CheckTimeoutInfo _checkTimeoutInfo;
 
-    /*
-     * [obname]#hash@tcp -h xxxx -p xxx
-     */
-    string                                _name;
+  /*
+   * socket选项
+   */
+  vector<SocketOpt> _socketOpts;
 
-    /**
-     * obname#[hash]@tcp -h xxxx -p xxx
-     * ever hash has one connection
-     */
-    string                                _hash;
+  /*
+   * push消息 callback
+   */
+  ServantProxyCallbackPtr _pushCallback;
 
-	/**
-	 * obname#hash@[tcp -h xxxx -p xxx]
-	 * ever hash has one connection
-	 */
-    string                                _address;
+  /*
+   * 结点路由管理类
+   */
+  std::unique_ptr<EndpointManager> _endpointManger;
 
-    /**
-     * obj full name
-     */
-    string                                _sObjectProxyName;
+  /*
+   * 超时队列(连接建立前)
+   */
+  TC_TimeoutQueueNoID<ReqMessage*> _reqTimeoutQueue;
 
-    /*
-     * 按set规则调用的set名称
-     */
-    string                                _invokeSetId;
-
-    /*
-     * 是否是按set规则调用
-     */
-    bool                                  _isInvokeBySet;
-
-    /*
-     * 是否调用了taf_set_protocol设置过proxy的协议函数，
-     * 设置过了就不在设置
-     */
-    bool                                  _hasSetProtocol;
-
-    /*
-     * 请求和响应的协议解析器
-     */
-    ProxyProtocol                         _proxyProtocol;
-
-    /*
-     * 连接超时的时间
-     */
-    int                                   _conTimeout;
-
-    /**
-     * reconnect, 0: not reconnect
-     */
-    int                                   _reConnectSecond = 0;
-
-    /*
-     * 超时控制策略信息
-     */
-    CheckTimeoutInfo                      _checkTimeoutInfo;
-
-    /*
-     * socket选项
-     */
-    vector<SocketOpt>                     _socketOpts;
-
-    /*
-     * push消息 callback
-     */
-    ServantProxyCallbackPtr               _pushCallback;
-
-    /*
-     * 结点路由管理类
-     */
-    std::unique_ptr<EndpointManager>      _endpointManger;
-
-    /*
-     * 超时队列(连接建立前)
-     */
-    TC_TimeoutQueueNoID<ReqMessage *>     _reqTimeoutQueue;
-    
-    /*
-     * ServantProxy
-     */
-    ServantProxy *                        _servantProxy = NULL;
+  /*
+   * ServantProxy
+   */
+  ServantProxy* _servantProxy = NULL;
 };
 ///////////////////////////////////////////////////////////////////////////////////
-}
+}  // namespace tars
 #endif

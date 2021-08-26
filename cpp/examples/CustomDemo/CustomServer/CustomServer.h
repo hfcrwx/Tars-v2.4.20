@@ -9,24 +9,22 @@ using namespace tars;
 /**
  *
  **/
-class CustomServer : public Application
-{
-public:
-    /**
-     *
-     **/
-    virtual ~CustomServer() {};
+class CustomServer : public Application {
+ public:
+  /**
+   *
+   **/
+  virtual ~CustomServer(){};
 
-    /**
-     *
-     **/
-    virtual void initialize();
+  /**
+   *
+   **/
+  virtual void initialize();
 
-    /**
-     *
-     **/
-    virtual void destroyApp();
-
+  /**
+   *
+   **/
+  virtual void destroyApp();
 };
 
 extern CustomServer g_app;

@@ -11,650 +11,577 @@
 #include <vector>
 #include "tup/Tars.h"
 using namespace std;
-#include "servant/ServantProxy.h"
-#include "servant/Servant.h"
 #include "promise/promise.h"
+#include "servant/Servant.h"
+#include "servant/ServantProxy.h"
 
+namespace Test {
 
-namespace Test
-{
+/* callback of async proxy for client */
+class StressPrxCallback : public tars::ServantProxyCallback {
+ public:
+  virtual ~StressPrxCallback() {}
+  virtual void callback_test(tars::Int32 ret) {
+    throw std::runtime_error("callback_test() override incorrect.");
+  }
+  virtual void callback_test_exception(tars::Int32 ret) {
+    throw std::runtime_error("callback_test_exception() override incorrect.");
+  }
 
-    /* callback of async proxy for client */
-    class StressPrxCallback: public tars::ServantProxyCallback
-    {
-    public:
-        virtual ~StressPrxCallback(){}
-        virtual void callback_test(tars::Int32 ret)
-        { throw std::runtime_error("callback_test() override incorrect."); }
-        virtual void callback_test_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_test_exception() override incorrect."); }
+  virtual void callback_testStr(tars::Int32 ret, const std::string &sOut) {
+    throw std::runtime_error("callback_testStr() override incorrect.");
+  }
+  virtual void callback_testStr_exception(tars::Int32 ret) {
+    throw std::runtime_error(
+        "callback_testStr_exception() override incorrect.");
+  }
 
-        virtual void callback_testStr(tars::Int32 ret,  const std::string& sOut)
-        { throw std::runtime_error("callback_testStr() override incorrect."); }
-        virtual void callback_testStr_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_testStr_exception() override incorrect."); }
+ public:
+  virtual const map<std::string, std::string> &getResponseContext() const {
+    CallbackThreadData *pCbtd = CallbackThreadData::getData();
+    assert(pCbtd != NULL);
 
-    public:
-        virtual const map<std::string, std::string> & getResponseContext() const
-        {
-            CallbackThreadData * pCbtd = CallbackThreadData::getData();
-            assert(pCbtd != NULL);
+    if (!pCbtd->getContextValid()) {
+      throw TC_Exception("cann't get response context");
+    }
+    return pCbtd->getResponseContext();
+  }
 
-            if(!pCbtd->getContextValid())
-            {
-                throw TC_Exception("cann't get response context");
-            }
-            return pCbtd->getResponseContext();
+ public:
+  virtual int onDispatch(tars::ReqMessagePtr msg) {
+    static ::std::string __Stress_all[] = {"test", "testStr"};
+    pair<string *, string *> r = equal_range(__Stress_all, __Stress_all + 2,
+                                             string(msg->request.sFuncName));
+    if (r.first == r.second) return tars::TARSSERVERNOFUNCERR;
+    switch (r.first - __Stress_all) {
+      case 0: {
+        if (msg->response.iRet != tars::TARSSERVERSUCCESS) {
+          callback_test_exception(msg->response.iRet);
+
+          return msg->response.iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response.sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response.context);
+
+        callback_test(_ret);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 1: {
+        if (msg->response.iRet != tars::TARSSERVERSUCCESS) {
+          callback_testStr_exception(msg->response.iRet);
+
+          return msg->response.iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response.sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        std::string sOut;
+        _is.read(sOut, 2, true);
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response.context);
+
+        callback_testStr(_ret, sOut);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+    }
+    return tars::TARSSERVERNOFUNCERR;
+  }
+};
+typedef tars::TC_AutoPtr<StressPrxCallback> StressPrxCallbackPtr;
+
+/* callback of promise async proxy for client */
+class StressPrxCallbackPromise : public tars::ServantProxyCallback {
+ public:
+  virtual ~StressPrxCallbackPromise() {}
+
+ public:
+  struct Promisetest : virtual public TC_HandleBase {
+   public:
+    tars::Int32 _ret;
+    map<std::string, std::string> _mRspContext;
+  };
+
+  typedef tars::TC_AutoPtr<StressPrxCallbackPromise::Promisetest>
+      PromisetestPtr;
+
+  StressPrxCallbackPromise(
+      const promise::Promise<StressPrxCallbackPromise::PromisetestPtr> &promise)
+      : _promise_test(promise) {}
+
+  virtual void callback_test(
+      const StressPrxCallbackPromise::PromisetestPtr &ptr) {
+    _promise_test.setValue(ptr);
+  }
+  virtual void callback_test_exception(tars::Int32 ret) {
+    std::string str("");
+    str += "Function:test_exception|Ret:";
+    str += TC_Common::tostr(ret);
+    _promise_test.setException(promise::copyException(str, ret));
+  }
+
+ protected:
+  promise::Promise<StressPrxCallbackPromise::PromisetestPtr> _promise_test;
+
+ public:
+  struct PromisetestStr : virtual public TC_HandleBase {
+   public:
+    tars::Int32 _ret;
+    std::string sOut;
+    map<std::string, std::string> _mRspContext;
+  };
+
+  typedef tars::TC_AutoPtr<StressPrxCallbackPromise::PromisetestStr>
+      PromisetestStrPtr;
+
+  StressPrxCallbackPromise(
+      const promise::Promise<StressPrxCallbackPromise::PromisetestStrPtr>
+          &promise)
+      : _promise_testStr(promise) {}
+
+  virtual void callback_testStr(
+      const StressPrxCallbackPromise::PromisetestStrPtr &ptr) {
+    _promise_testStr.setValue(ptr);
+  }
+  virtual void callback_testStr_exception(tars::Int32 ret) {
+    std::string str("");
+    str += "Function:testStr_exception|Ret:";
+    str += TC_Common::tostr(ret);
+    _promise_testStr.setException(promise::copyException(str, ret));
+  }
+
+ protected:
+  promise::Promise<StressPrxCallbackPromise::PromisetestStrPtr>
+      _promise_testStr;
+
+ public:
+  virtual int onDispatch(tars::ReqMessagePtr msg) {
+    static ::std::string __Stress_all[] = {"test", "testStr"};
+
+    pair<string *, string *> r = equal_range(__Stress_all, __Stress_all + 2,
+                                             string(msg->request.sFuncName));
+    if (r.first == r.second) return tars::TARSSERVERNOFUNCERR;
+    switch (r.first - __Stress_all) {
+      case 0: {
+        if (msg->response.iRet != tars::TARSSERVERSUCCESS) {
+          callback_test_exception(msg->response.iRet);
+
+          return msg->response.iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response.sBuffer);
+
+        StressPrxCallbackPromise::PromisetestPtr ptr =
+            new StressPrxCallbackPromise::Promisetest();
+
+        try {
+          _is.read(ptr->_ret, 0, true);
+
+        } catch (std::exception &ex) {
+          callback_test_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_test_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
         }
 
-    public:
-        virtual int onDispatch(tars::ReqMessagePtr msg)
-        {
-            static ::std::string __Stress_all[]=
-            {
-                "test",
-                "testStr"
-            };
-            pair<string*, string*> r = equal_range(__Stress_all, __Stress_all+2, string(msg->request.sFuncName));
-            if(r.first == r.second) return tars::TARSSERVERNOFUNCERR;
-            switch(r.first - __Stress_all)
-            {
-                case 0:
-                {
-                    if (msg->response.iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_test_exception(msg->response.iRet);
+        ptr->_mRspContext = msg->response.context;
 
-                        return msg->response.iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
+        callback_test(ptr);
 
-                    _is.setBuffer(msg->response.sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 1: {
+        if (msg->response.iRet != tars::TARSSERVERSUCCESS) {
+          callback_testStr_exception(msg->response.iRet);
 
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
+          return msg->response.iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
 
-                    pCbtd->setResponseContext(msg->response.context);
+        _is.setBuffer(msg->response.sBuffer);
 
-                    callback_test(_ret);
+        StressPrxCallbackPromise::PromisetestStrPtr ptr =
+            new StressPrxCallbackPromise::PromisetestStr();
 
-                    pCbtd->delResponseContext();
+        try {
+          _is.read(ptr->_ret, 0, true);
 
-                    return tars::TARSSERVERSUCCESS;
+          _is.read(ptr->sOut, 2, true);
+        } catch (std::exception &ex) {
+          callback_testStr_exception(tars::TARSCLIENTDECODEERR);
 
-                }
-                case 1:
-                {
-                    if (msg->response.iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_testStr_exception(msg->response.iRet);
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_testStr_exception(tars::TARSCLIENTDECODEERR);
 
-                        return msg->response.iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response.sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    std::string sOut;
-                    _is.read(sOut, 2, true);
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response.context);
-
-                    callback_testStr(_ret, sOut);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-            }
-            return tars::TARSSERVERNOFUNCERR;
+          return tars::TARSCLIENTDECODEERR;
         }
 
-    };
-    typedef tars::TC_AutoPtr<StressPrxCallback> StressPrxCallbackPtr;
+        ptr->_mRspContext = msg->response.context;
 
-    /* callback of promise async proxy for client */
-    class StressPrxCallbackPromise: public tars::ServantProxyCallback
-    {
-    public:
-        virtual ~StressPrxCallbackPromise(){}
-    public:
-        struct Promisetest: virtual public TC_HandleBase
-        {
-        public:
-            tars::Int32 _ret;
-            map<std::string, std::string> _mRspContext;
-        };
-        
-        typedef tars::TC_AutoPtr< StressPrxCallbackPromise::Promisetest > PromisetestPtr;
+        callback_testStr(ptr);
 
-        StressPrxCallbackPromise(const promise::Promise< StressPrxCallbackPromise::PromisetestPtr > &promise)
-        : _promise_test(promise)
-        {}
-        
-        virtual void callback_test(const StressPrxCallbackPromise::PromisetestPtr &ptr)
-        {
-            _promise_test.setValue(ptr);
+        return tars::TARSSERVERSUCCESS;
+      }
+    }
+    return tars::TARSSERVERNOFUNCERR;
+  }
+};
+typedef tars::TC_AutoPtr<StressPrxCallbackPromise> StressPrxCallbackPromisePtr;
+
+/* callback of coroutine async proxy for client */
+class StressCoroPrxCallback : public StressPrxCallback {
+ public:
+  virtual ~StressCoroPrxCallback() {}
+
+ public:
+  virtual const map<std::string, std::string> &getResponseContext() const {
+    return _mRspContext;
+  }
+
+  virtual void setResponseContext(
+      const map<std::string, std::string> &mContext) {
+    _mRspContext = mContext;
+  }
+
+ public:
+  int onDispatch(tars::ReqMessagePtr msg) {
+    static ::std::string __Stress_all[] = {"test", "testStr"};
+
+    pair<string *, string *> r = equal_range(__Stress_all, __Stress_all + 2,
+                                             string(msg->request.sFuncName));
+    if (r.first == r.second) return tars::TARSSERVERNOFUNCERR;
+    switch (r.first - __Stress_all) {
+      case 0: {
+        if (msg->response.iRet != tars::TARSSERVERSUCCESS) {
+          callback_test_exception(msg->response.iRet);
+
+          return msg->response.iRet;
         }
-        virtual void callback_test_exception(tars::Int32 ret)
-        {
-            std::string str("");
-            str += "Function:test_exception|Ret:";
-            str += TC_Common::tostr(ret);
-            _promise_test.setException(promise::copyException(str, ret));
-        }
+        tars::TarsInputStream<tars::BufferReader> _is;
 
-    protected:
-        promise::Promise< StressPrxCallbackPromise::PromisetestPtr > _promise_test;
+        _is.setBuffer(msg->response.sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
 
-    public:
-        struct PromisetestStr: virtual public TC_HandleBase
-        {
-        public:
-            tars::Int32 _ret;
-            std::string sOut;
-            map<std::string, std::string> _mRspContext;
-        };
-        
-        typedef tars::TC_AutoPtr< StressPrxCallbackPromise::PromisetestStr > PromisetestStrPtr;
+          setResponseContext(msg->response.context);
 
-        StressPrxCallbackPromise(const promise::Promise< StressPrxCallbackPromise::PromisetestStrPtr > &promise)
-        : _promise_testStr(promise)
-        {}
-        
-        virtual void callback_testStr(const StressPrxCallbackPromise::PromisetestStrPtr &ptr)
-        {
-            _promise_testStr.setValue(ptr);
-        }
-        virtual void callback_testStr_exception(tars::Int32 ret)
-        {
-            std::string str("");
-            str += "Function:testStr_exception|Ret:";
-            str += TC_Common::tostr(ret);
-            _promise_testStr.setException(promise::copyException(str, ret));
+          callback_test(_ret);
+
+        } catch (std::exception &ex) {
+          callback_test_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_test_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
         }
 
-    protected:
-        promise::Promise< StressPrxCallbackPromise::PromisetestStrPtr > _promise_testStr;
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 1: {
+        if (msg->response.iRet != tars::TARSSERVERSUCCESS) {
+          callback_testStr_exception(msg->response.iRet);
 
-    public:
-        virtual int onDispatch(tars::ReqMessagePtr msg)
-        {
-            static ::std::string __Stress_all[]=
-            {
-                "test",
-                "testStr"
-            };
+          return msg->response.iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
 
-            pair<string*, string*> r = equal_range(__Stress_all, __Stress_all+2, string(msg->request.sFuncName));
-            if(r.first == r.second) return tars::TARSSERVERNOFUNCERR;
-            switch(r.first - __Stress_all)
-            {
-                case 0:
-                {
-                    if (msg->response.iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_test_exception(msg->response.iRet);
+        _is.setBuffer(msg->response.sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
 
-                        return msg->response.iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
+          std::string sOut;
+          _is.read(sOut, 2, true);
+          setResponseContext(msg->response.context);
 
-                    _is.setBuffer(msg->response.sBuffer);
+          callback_testStr(_ret, sOut);
 
-                    StressPrxCallbackPromise::PromisetestPtr ptr = new StressPrxCallbackPromise::Promisetest();
+        } catch (std::exception &ex) {
+          callback_testStr_exception(tars::TARSCLIENTDECODEERR);
 
-                    try
-                    {
-                        _is.read(ptr->_ret, 0, true);
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_testStr_exception(tars::TARSCLIENTDECODEERR);
 
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_test_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_test_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    ptr->_mRspContext = msg->response.context;
-
-                    callback_test(ptr);
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 1:
-                {
-                    if (msg->response.iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_testStr_exception(msg->response.iRet);
-
-                        return msg->response.iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response.sBuffer);
-
-                    StressPrxCallbackPromise::PromisetestStrPtr ptr = new StressPrxCallbackPromise::PromisetestStr();
-
-                    try
-                    {
-                        _is.read(ptr->_ret, 0, true);
-
-                        _is.read(ptr->sOut, 2, true);
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_testStr_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_testStr_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    ptr->_mRspContext = msg->response.context;
-
-                    callback_testStr(ptr);
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-            }
-            return tars::TARSSERVERNOFUNCERR;
+          return tars::TARSCLIENTDECODEERR;
         }
 
-    };
-    typedef tars::TC_AutoPtr<StressPrxCallbackPromise> StressPrxCallbackPromisePtr;
+        return tars::TARSSERVERSUCCESS;
+      }
+    }
+    return tars::TARSSERVERNOFUNCERR;
+  }
 
-    /* callback of coroutine async proxy for client */
-    class StressCoroPrxCallback: public StressPrxCallback
-    {
-    public:
-        virtual ~StressCoroPrxCallback(){}
-    public:
-        virtual const map<std::string, std::string> & getResponseContext() const { return _mRspContext; }
+ protected:
+  map<std::string, std::string> _mRspContext;
+};
+typedef tars::TC_AutoPtr<StressCoroPrxCallback> StressCoroPrxCallbackPtr;
 
-        virtual void setResponseContext(const map<std::string, std::string> &mContext) { _mRspContext = mContext; }
+/* proxy for client */
+class StressProxy : public tars::ServantProxy {
+ public:
+  typedef map<string, string> TARS_CONTEXT;
+  tars::Int32 test(const map<string, string> &context = TARS_CONTEXT(),
+                   map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriter> _os;
+    tars::ResponsePacket rep;
+    std::map<string, string> _mStatus;
+    tars_invoke(tars::TARSNORMAL, "test", _os.getByteBuffer(), context,
+                _mStatus, rep);
+    if (pResponseContext) {
+      *pResponseContext = rep.context;
+    }
 
-    public:
-        int onDispatch(tars::ReqMessagePtr msg)
-        {
-            static ::std::string __Stress_all[]=
-            {
-                "test",
-                "testStr"
-            };
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep.sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    return _ret;
+  }
 
-            pair<string*, string*> r = equal_range(__Stress_all, __Stress_all+2, string(msg->request.sFuncName));
-            if(r.first == r.second) return tars::TARSSERVERNOFUNCERR;
-            switch(r.first - __Stress_all)
-            {
-                case 0:
-                {
-                    if (msg->response.iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_test_exception(msg->response.iRet);
+  void async_test(StressPrxCallbackPtr callback,
+                  const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriter> _os;
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "test", _os.getByteBuffer(), context,
+                      _mStatus, callback);
+  }
 
-                        return msg->response.iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
+  promise::Future<StressPrxCallbackPromise::PromisetestPtr> promise_async_test(
+      const map<string, string> &context) {
+    promise::Promise<StressPrxCallbackPromise::PromisetestPtr> promise;
+    StressPrxCallbackPromisePtr callback =
+        new StressPrxCallbackPromise(promise);
 
-                    _is.setBuffer(msg->response.sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
+    tars::TarsOutputStream<tars::BufferWriter> _os;
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "test", _os.getByteBuffer(), context,
+                      _mStatus, callback);
 
-                        setResponseContext(msg->response.context);
+    return promise.getFuture();
+  }
 
-                        callback_test(_ret);
+  void coro_test(StressCoroPrxCallbackPtr callback,
+                 const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriter> _os;
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "test", _os.getByteBuffer(), context,
+                      _mStatus, callback, true);
+  }
 
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_test_exception(tars::TARSCLIENTDECODEERR);
+  tars::Int32 testStr(const std::string &sIn, std::string &sOut,
+                      const map<string, string> &context = TARS_CONTEXT(),
+                      map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriter> _os;
+    _os.write(sIn, 1);
+    _os.write(sOut, 2);
+    tars::ResponsePacket rep;
+    std::map<string, string> _mStatus;
+    tars_invoke(tars::TARSNORMAL, "testStr", _os.getByteBuffer(), context,
+                _mStatus, rep);
+    if (pResponseContext) {
+      *pResponseContext = rep.context;
+    }
 
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_test_exception(tars::TARSCLIENTDECODEERR);
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep.sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    _is.read(sOut, 2, true);
+    return _ret;
+  }
 
-                        return tars::TARSCLIENTDECODEERR;
-                    }
+  void async_testStr(StressPrxCallbackPtr callback, const std::string &sIn,
+                     const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriter> _os;
+    _os.write(sIn, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "testStr", _os.getByteBuffer(), context,
+                      _mStatus, callback);
+  }
 
-                    return tars::TARSSERVERSUCCESS;
+  promise::Future<StressPrxCallbackPromise::PromisetestStrPtr>
+  promise_async_testStr(const std::string &sIn,
+                        const map<string, string> &context) {
+    promise::Promise<StressPrxCallbackPromise::PromisetestStrPtr> promise;
+    StressPrxCallbackPromisePtr callback =
+        new StressPrxCallbackPromise(promise);
 
-                }
-                case 1:
-                {
-                    if (msg->response.iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_testStr_exception(msg->response.iRet);
+    tars::TarsOutputStream<tars::BufferWriter> _os;
+    _os.write(sIn, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "testStr", _os.getByteBuffer(), context,
+                      _mStatus, callback);
 
-                        return msg->response.iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
+    return promise.getFuture();
+  }
 
-                    _is.setBuffer(msg->response.sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
+  void coro_testStr(StressCoroPrxCallbackPtr callback, const std::string &sIn,
+                    const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriter> _os;
+    _os.write(sIn, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "testStr", _os.getByteBuffer(), context,
+                      _mStatus, callback, true);
+  }
 
-                        std::string sOut;
-                        _is.read(sOut, 2, true);
-                        setResponseContext(msg->response.context);
+  StressProxy *tars_hash(int64_t key) {
+    return (StressProxy *)ServantProxy::tars_hash(key);
+  }
 
-                        callback_testStr(_ret, sOut);
+  StressProxy *tars_consistent_hash(int64_t key) {
+    return (StressProxy *)ServantProxy::tars_consistent_hash(key);
+  }
 
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_testStr_exception(tars::TARSCLIENTDECODEERR);
+  StressProxy *tars_set_timeout(int msecond) {
+    return (StressProxy *)ServantProxy::tars_set_timeout(msecond);
+  }
+};
+typedef tars::TC_AutoPtr<StressProxy> StressPrx;
 
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_testStr_exception(tars::TARSCLIENTDECODEERR);
+/* servant for server */
+class Stress : public tars::Servant {
+ public:
+  virtual ~Stress() {}
+  virtual tars::Int32 test(tars::TarsCurrentPtr current) = 0;
+  static void async_response_test(tars::TarsCurrentPtr current,
+                                  tars::Int32 _ret) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriter, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
 
-                        return tars::TARSCLIENTDECODEERR;
-                    }
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriter> _os;
+      _os.write(_ret, 0);
 
-                    return tars::TARSSERVERSUCCESS;
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
 
-                }
-            }
-            return tars::TARSSERVERNOFUNCERR;
+  virtual tars::Int32 testStr(const std::string &sIn, std::string &sOut,
+                              tars::TarsCurrentPtr current) = 0;
+  static void async_response_testStr(tars::TarsCurrentPtr current,
+                                     tars::Int32 _ret,
+                                     const std::string &sOut) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriter, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("sOut", sOut);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriter> _os;
+      _os.write(_ret, 0);
+
+      _os.write(sOut, 2);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+ public:
+  int onDispatch(tars::TarsCurrentPtr _current,
+                 vector<char> &_sResponseBuffer) {
+    static ::std::string __Test__Stress_all[] = {"test", "testStr"};
+
+    pair<string *, string *> r = equal_range(
+        __Test__Stress_all, __Test__Stress_all + 2, _current->getFuncName());
+    if (r.first == r.second) return tars::TARSSERVERNOFUNCERR;
+    switch (r.first - __Test__Stress_all) {
+      case 0: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriter, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+        } else {
         }
-
-    protected:
-        map<std::string, std::string> _mRspContext;
-    };
-    typedef tars::TC_AutoPtr<StressCoroPrxCallback> StressCoroPrxCallbackPtr;
-
-    /* proxy for client */
-    class StressProxy : public tars::ServantProxy
-    {
-    public:
-        typedef map<string, string> TARS_CONTEXT;
-        tars::Int32 test(const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
+        tars::Int32 _ret = test(_current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriter, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.encode(_sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriter> _os;
-            tars::ResponsePacket rep;
-            std::map<string, string> _mStatus;
-            tars_invoke(tars::TARSNORMAL,"test", _os.getByteBuffer(), context, _mStatus, rep);
-            if(pResponseContext)
-            {
-                *pResponseContext = rep.context;
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep.sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            return _ret;
+            _os.write(_ret, 0);
+            _os.swap(_sResponseBuffer);
+          }
         }
-
-        void async_test(StressPrxCallbackPtr callback,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriter> _os;
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"test", _os.getByteBuffer(), context, _mStatus, callback);
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 1: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        std::string sIn;
+        std::string sOut;
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriter, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+          tarsAttr.get("sIn", sIn);
+          tarsAttr.getByDefault("sOut", sOut, sOut);
+        } else {
+          _is.read(sIn, 1, true);
+          _is.read(sOut, 2, false);
         }
-        
-        promise::Future< StressPrxCallbackPromise::PromisetestPtr > promise_async_test(const map<string, string>& context)
-        {
-            promise::Promise< StressPrxCallbackPromise::PromisetestPtr > promise;
-            StressPrxCallbackPromisePtr callback = new StressPrxCallbackPromise(promise);
-
+        tars::Int32 _ret = testStr(sIn, sOut, _current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriter, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("sOut", sOut);
+            tarsAttr.encode(_sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriter> _os;
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"test", _os.getByteBuffer(), context, _mStatus, callback);
-
-            return promise.getFuture();
-        }
-
-        void coro_test(StressCoroPrxCallbackPtr callback,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriter> _os;
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"test", _os.getByteBuffer(), context, _mStatus, callback, true);
-        }
-
-        tars::Int32 testStr(const std::string & sIn,std::string &sOut,const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
-            tars::TarsOutputStream<tars::BufferWriter> _os;
-            _os.write(sIn, 1);
+            _os.write(_ret, 0);
             _os.write(sOut, 2);
-            tars::ResponsePacket rep;
-            std::map<string, string> _mStatus;
-            tars_invoke(tars::TARSNORMAL,"testStr", _os.getByteBuffer(), context, _mStatus, rep);
-            if(pResponseContext)
-            {
-                *pResponseContext = rep.context;
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep.sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            _is.read(sOut, 2, true);
-            return _ret;
+            _os.swap(_sResponseBuffer);
+          }
         }
+        return tars::TARSSERVERSUCCESS;
+      }
+    }
+    return tars::TARSSERVERNOFUNCERR;
+  }
+};
 
-        void async_testStr(StressPrxCallbackPtr callback,const std::string &sIn,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriter> _os;
-            _os.write(sIn, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"testStr", _os.getByteBuffer(), context, _mStatus, callback);
-        }
-        
-        promise::Future< StressPrxCallbackPromise::PromisetestStrPtr > promise_async_testStr(const std::string &sIn,const map<string, string>& context)
-        {
-            promise::Promise< StressPrxCallbackPromise::PromisetestStrPtr > promise;
-            StressPrxCallbackPromisePtr callback = new StressPrxCallbackPromise(promise);
-
-            tars::TarsOutputStream<tars::BufferWriter> _os;
-            _os.write(sIn, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"testStr", _os.getByteBuffer(), context, _mStatus, callback);
-
-            return promise.getFuture();
-        }
-
-        void coro_testStr(StressCoroPrxCallbackPtr callback,const std::string &sIn,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriter> _os;
-            _os.write(sIn, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"testStr", _os.getByteBuffer(), context, _mStatus, callback, true);
-        }
-
-        StressProxy* tars_hash(int64_t key)
-        {
-            return (StressProxy*)ServantProxy::tars_hash(key);
-        }
-
-        StressProxy* tars_consistent_hash(int64_t key)
-        {
-            return (StressProxy*)ServantProxy::tars_consistent_hash(key);
-        }
-
-        StressProxy* tars_set_timeout(int msecond)
-        {
-            return (StressProxy*)ServantProxy::tars_set_timeout(msecond);
-        }
-
-    };
-    typedef tars::TC_AutoPtr<StressProxy> StressPrx;
-
-    /* servant for server */
-    class Stress : public tars::Servant
-    {
-    public:
-        virtual ~Stress(){}
-        virtual tars::Int32 test(tars::TarsCurrentPtr current) = 0;
-        static void async_response_test(tars::TarsCurrentPtr current, tars::Int32 _ret)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriter, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriter> _os;
-                _os.write(_ret, 0);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-        virtual tars::Int32 testStr(const std::string & sIn,std::string &sOut,tars::TarsCurrentPtr current) = 0;
-        static void async_response_testStr(tars::TarsCurrentPtr current, tars::Int32 _ret, const std::string &sOut)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriter, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("sOut", sOut);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriter> _os;
-                _os.write(_ret, 0);
-
-                _os.write(sOut, 2);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-    public:
-        int onDispatch(tars::TarsCurrentPtr _current, vector<char> &_sResponseBuffer)
-        {
-            static ::std::string __Test__Stress_all[]=
-            {
-                "test",
-                "testStr"
-            };
-
-            pair<string*, string*> r = equal_range(__Test__Stress_all, __Test__Stress_all+2, _current->getFuncName());
-            if(r.first == r.second) return tars::TARSSERVERNOFUNCERR;
-            switch(r.first - __Test__Stress_all)
-            {
-                case 0:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriter, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                    }
-                    else
-                    {
-                    }
-                    tars::Int32 _ret = test(_current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION )
-                        {
-                            UniAttribute<tars::BufferWriter, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriter> _os;
-                            _os.write(_ret, 0);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 1:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    std::string sIn;
-                    std::string sOut;
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriter, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                        tarsAttr.get("sIn", sIn);
-                        tarsAttr.getByDefault("sOut", sOut, sOut);
-                    }
-                    else
-                    {
-                        _is.read(sIn, 1, true);
-                        _is.read(sOut, 2, false);
-                    }
-                    tars::Int32 _ret = testStr(sIn,sOut, _current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION )
-                        {
-                            UniAttribute<tars::BufferWriter, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("sOut", sOut);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriter> _os;
-                            _os.write(_ret, 0);
-                            _os.write(sOut, 2);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-            }
-            return tars::TARSSERVERNOFUNCERR;
-        }
-    };
-
-
-}
-
-
+}  // namespace Test
 
 #endif

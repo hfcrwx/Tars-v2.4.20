@@ -1,32 +1,34 @@
 /**
- * Tencent is pleased to support the open source community by making Tars available.
+ * Tencent is pleased to support the open source community by making Tars
+ * available.
  *
  * Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except 
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  * https://opensource.org/licenses/BSD-3-Clause
  *
- * Unless required by applicable law or agreed to in writing, software distributed 
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the 
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
-#include "util/tc_network_buffer.h"
 #include "TestcaseServer.h"
 #include "HttpDemoImp.h"
-#include "RPCTestImp.h"
-#include "stub/MockProxyObjImp.h"
-#include "stub/TestPushServantImp.h"
-#include "stub/ConfigImp.h"
-#include "stub/QueryImp.h"
 #include "OneWayRpcTestImp.h"
+#include "RPCTestImp.h"
 #include "servant/NotifyObserver.h"
+#include "stub/ConfigImp.h"
+#include "stub/MockProxyObjImp.h"
+#include "stub/QueryImp.h"
+#include "stub/TestPushServantImp.h"
+#include "util/tc_network_buffer.h"
 //#include "DyeingTestImp.h"
 #include "EpsTestImp.h"
-
 
 using namespace std;
 using namespace mockProxy;
@@ -47,7 +49,8 @@ TestcaseServer g_app;
 
 // 		iHeaderLen = ntohl(iHeaderLen);
 
-// 		if(iHeaderLen < (unsigned int)(sizeof(unsigned int))|| iHeaderLen > 1000000)
+// 		if(iHeaderLen < (unsigned int)(sizeof(unsigned int))|| iHeaderLen >
+// 1000000)
 // 		{
 // 			return TC_NetWorkBuffer::PACKET_ERR;
 // 		}
@@ -111,93 +114,94 @@ TestcaseServer g_app;
 // 	}
 // };
 
-
 /////////////////////////////////////////////////////////////////
-void
-TestcaseServer::initialize()
-{
-    //initialize application here:
-    //...
-//    addServant<QueryImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".QueryObj");
+void TestcaseServer::initialize() {
+  // initialize application here:
+  //...
+  //    addServant<QueryImp>(ServerConfig::Application + "." +
+  //    ServerConfig::ServerName + ".QueryObj");
 
-    addServant<HttpDemoImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".HttpDemoObj");
-	addServantProtocol(ServerConfig::Application + "." + ServerConfig::ServerName + ".HttpDemoObj", &TC_NetWorkBuffer::parseHttp);
+  addServant<HttpDemoImp>(ServerConfig::Application + "." +
+                          ServerConfig::ServerName + ".HttpDemoObj");
+  addServantProtocol(ServerConfig::Application + "." +
+                         ServerConfig::ServerName + ".HttpDemoObj",
+                     &TC_NetWorkBuffer::parseHttp);
 
-	addServant<MockProxyObjImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".MockProxyObj");
-	addServantProtocol(ServerConfig::Application + "." + ServerConfig::ServerName + ".MockProxyObj", &AppProtocol::parse);
+  addServant<MockProxyObjImp>(ServerConfig::Application + "." +
+                              ServerConfig::ServerName + ".MockProxyObj");
+  addServantProtocol(ServerConfig::Application + "." +
+                         ServerConfig::ServerName + ".MockProxyObj",
+                     &AppProtocol::parse);
 
-	addServant<RPCTestImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".RPCTestObj");
-	addServant<RPCTestImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".UdpRPCObj");
+  addServant<RPCTestImp>(ServerConfig::Application + "." +
+                         ServerConfig::ServerName + ".RPCTestObj");
+  addServant<RPCTestImp>(ServerConfig::Application + "." +
+                         ServerConfig::ServerName + ".UdpRPCObj");
 
-	addServant<TestPushServantImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".PushObj");
-    addServantProtocol(ServerConfig::Application + "." + ServerConfig::ServerName + ".PushObj", &AppProtocol::parse);
+  addServant<TestPushServantImp>(ServerConfig::Application + "." +
+                                 ServerConfig::ServerName + ".PushObj");
+  addServantProtocol(
+      ServerConfig::Application + "." + ServerConfig::ServerName + ".PushObj",
+      &AppProtocol::parse);
 
-    addServant<ConfigImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".ConfigObj");
-    addServant<QueryImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".QueryObj");
-     
-	
-    addServant<OneWayRpcTestImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".OneWayRpcObj");
+  addServant<ConfigImp>(ServerConfig::Application + "." +
+                        ServerConfig::ServerName + ".ConfigObj");
+  addServant<QueryImp>(ServerConfig::Application + "." +
+                       ServerConfig::ServerName + ".QueryObj");
 
-	addServant<EpsTestImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".EpsTestObj");
+  addServant<OneWayRpcTestImp>(ServerConfig::Application + "." +
+                               ServerConfig::ServerName + ".OneWayRpcObj");
 
-	//addServant<DyeingTestImp>(ServerConfig::Application + "." + ServerConfig::ServerName + ".DyeingTestObj");
+  addServant<EpsTestImp>(ServerConfig::Application + "." +
+                         ServerConfig::ServerName + ".EpsTestObj");
 
-    TARS_ADD_ADMIN_CMD_NORMAL("AdminCmdNormalTest", TestcaseServer::cmdAdd);
+  // addServant<DyeingTestImp>(ServerConfig::Application + "." +
+  // ServerConfig::ServerName + ".DyeingTestObj");
 
-    TARS_ADD_ADMIN_CMD_NORMAL("CmdToDelete", TestcaseServer::cmdAdd);
+  TARS_ADD_ADMIN_CMD_NORMAL("AdminCmdNormalTest", TestcaseServer::cmdAdd);
 
-    getNotifyObserver()->unregisterNotify("CmdToDelete", this);
+  TARS_ADD_ADMIN_CMD_NORMAL("CmdToDelete", TestcaseServer::cmdAdd);
 
-    TARS_ADD_ADMIN_CMD_NORMAL("DeletePrefixCmd", TestcaseServer::delTarsViewVersion);
-	
+  getNotifyObserver()->unregisterNotify("CmdToDelete", this);
+
+  TARS_ADD_ADMIN_CMD_NORMAL("DeletePrefixCmd",
+                            TestcaseServer::delTarsViewVersion);
 }
 /////////////////////////////////////////////////////////////////
 
-bool TestcaseServer::cmdAdd(const string& command, const string& params, string& result)
-{
-	result = params + " AdminCmdNormalTest success!";
-	return true;
+bool TestcaseServer::cmdAdd(const string& command, const string& params,
+                            string& result) {
+  result = params + " AdminCmdNormalTest success!";
+  return true;
 }
 
-bool TestcaseServer::delTarsViewVersion(const string& command, const string& params, string& result)
-{
-	getNotifyObserver()->unregisterPrefix("tars.viewversion", this);
-	
-	result = "Delete success!";
-	return true;
+bool TestcaseServer::delTarsViewVersion(const string& command,
+                                        const string& params, string& result) {
+  getNotifyObserver()->unregisterPrefix("tars.viewversion", this);
+
+  result = "Delete success!";
+  return true;
 }
 
-
-void
-TestcaseServer::destroyApp()
-{
-    //destroy application here:
-    //...
+void TestcaseServer::destroyApp() {
+  // destroy application here:
+  //...
 }
 
-void RunTestThread::run()
-{
-	try
-	{
-		g_app.main(argc, argv);
-		g_app.waitForShutdown();
-	}
-	catch (std::exception& e)
-	{
-		cerr << "std::exception:" << e.what() << std::endl;
-	}
-	catch (...)
-	{
-		cerr << "unknown exception." << std::endl;
-	}
-
+void RunTestThread::run() {
+  try {
+    g_app.main(argc, argv);
+    g_app.waitForShutdown();
+  } catch (std::exception& e) {
+    cerr << "std::exception:" << e.what() << std::endl;
+  } catch (...) {
+    cerr << "unknown exception." << std::endl;
+  }
 }
 
-void RunTestThread::init(int argc, char* argv[])
-{
-	this->argc = argc;
-	this->argv = argv;
-
+void RunTestThread::init(int argc, char* argv[]) {
+  this->argc = argc;
+  this->argv = argv;
 }
 
 typedef TC_AutoPtr<RunTestThread> RunTestThreadPtr;

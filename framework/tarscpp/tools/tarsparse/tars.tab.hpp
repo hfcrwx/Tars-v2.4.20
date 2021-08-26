@@ -35,42 +35,42 @@
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     TARS_VOID = 258,
-     TARS_STRUCT = 259,
-     TARS_BOOL = 260,
-     TARS_BYTE = 261,
-     TARS_SHORT = 262,
-     TARS_INT = 263,
-     TARS_DOUBLE = 264,
-     TARS_FLOAT = 265,
-     TARS_LONG = 266,
-     TARS_STRING = 267,
-     TARS_VECTOR = 268,
-     TARS_MAP = 269,
-     TARS_NAMESPACE = 270,
-     TARS_INTERFACE = 271,
-     TARS_IDENTIFIER = 272,
-     TARS_OUT = 273,
-     TARS_OP = 274,
-     TARS_KEY = 275,
-     TARS_ROUTE_KEY = 276,
-     TARS_REQUIRE = 277,
-     TARS_OPTIONAL = 278,
-     TARS_CONST_INTEGER = 279,
-     TARS_CONST_FLOAT = 280,
-     TARS_FALSE = 281,
-     TARS_TRUE = 282,
-     TARS_STRING_LITERAL = 283,
-     TARS_SCOPE_DELIMITER = 284,
-     TARS_CONST = 285,
-     TARS_ENUM = 286,
-     TARS_UNSIGNED = 287,
-     BAD_CHAR = 288
-   };
+#define YYTOKENTYPE
+/* Put the tokens into the symbol table, so that GDB and other debuggers
+   know about them.  */
+enum yytokentype {
+  TARS_VOID = 258,
+  TARS_STRUCT = 259,
+  TARS_BOOL = 260,
+  TARS_BYTE = 261,
+  TARS_SHORT = 262,
+  TARS_INT = 263,
+  TARS_DOUBLE = 264,
+  TARS_FLOAT = 265,
+  TARS_LONG = 266,
+  TARS_STRING = 267,
+  TARS_VECTOR = 268,
+  TARS_MAP = 269,
+  TARS_NAMESPACE = 270,
+  TARS_INTERFACE = 271,
+  TARS_IDENTIFIER = 272,
+  TARS_OUT = 273,
+  TARS_OP = 274,
+  TARS_KEY = 275,
+  TARS_ROUTE_KEY = 276,
+  TARS_REQUIRE = 277,
+  TARS_OPTIONAL = 278,
+  TARS_CONST_INTEGER = 279,
+  TARS_CONST_FLOAT = 280,
+  TARS_FALSE = 281,
+  TARS_TRUE = 282,
+  TARS_STRING_LITERAL = 283,
+  TARS_SCOPE_DELIMITER = 284,
+  TARS_CONST = 285,
+  TARS_ENUM = 286,
+  TARS_UNSIGNED = 287,
+  BAD_CHAR = 288
+};
 #endif
 /* Tokens.  */
 #define TARS_VOID 258
@@ -105,15 +105,11 @@
 #define TARS_UNSIGNED 287
 #define BAD_CHAR 288
 
-
-
-
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+#if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
 typedef int YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
+#define yystype YYSTYPE /* obsolescent; will be withdrawn */
+#define YYSTYPE_IS_DECLARED 1
+#define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE yylval;
-

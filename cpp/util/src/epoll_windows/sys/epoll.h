@@ -28,27 +28,28 @@
 typedef void *epoll_t;
 
 typedef union epoll_data {
-    void *ptr;
-    int fd;
-    uint32_t u32;
-    uint64_t u64;
-    // /* Windows-specific extensions. */
-    // SOCKET sock;
-    // HANDLE hnd;
+  void *ptr;
+  int fd;
+  uint32_t u32;
+  uint64_t u64;
+  // /* Windows-specific extensions. */
+  // SOCKET sock;
+  // HANDLE hnd;
 } epoll_data_t;
 
-struct epoll_event
-{
-    uint32_t events;   /* Epoll events */
-    epoll_data_t data; /* User data variable */
+struct epoll_event {
+  uint32_t events;   /* Epoll events */
+  epoll_data_t data; /* User data variable */
 };
 
 epoll_t epoll_create(int);
 
 int epoll_close(epoll_t epoll_hnd);
 
-int epoll_ctl(epoll_t epoll_hnd, int op, SOCKET sock, struct epoll_event *event);
+int epoll_ctl(epoll_t epoll_hnd, int op, SOCKET sock,
+              struct epoll_event *event);
 
-int epoll_wait(epoll_t epoll_hnd, struct epoll_event *events, int maxevents, int timeout);
+int epoll_wait(epoll_t epoll_hnd, struct epoll_event *events, int maxevents,
+               int timeout);
 
 #endif /* EPOLL_H_ */

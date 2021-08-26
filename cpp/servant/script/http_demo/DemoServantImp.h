@@ -7,31 +7,30 @@
  *
  *
  */
-class DemoServantImp : public Servant
-{
-public:
-    /**
-     *
-     */
-    virtual ~DemoServantImp() {}
+class DemoServantImp : public Servant {
+ public:
+  /**
+   *
+   */
+  virtual ~DemoServantImp() {}
 
-    /**
-     *
-     */
-    virtual void initialize();
+  /**
+   *
+   */
+  virtual void initialize();
 
-    /**
-     *
-     */
-    virtual void destroy();
+  /**
+   *
+   */
+  virtual void destroy();
 
-    /**
-     *
-     */
-	int doRequest(TarsCurrentPtr current, vector<char> &buffer);
+  /**
+   *
+   */
+  int doRequest(TarsCurrentPtr current, vector<char> &buffer);
 
-private:
-	int doRequest(const TC_HttpRequest &req, TC_HttpResponse &rsp);
+ private:
+  int doRequest(const TC_HttpRequest &req, TC_HttpResponse &rsp);
 };
 /////////////////////////////////////////////////////
 #endif

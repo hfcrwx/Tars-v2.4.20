@@ -1,17 +1,20 @@
 /**
- * Tencent is pleased to support the open source community by making Tars available.
+ * Tencent is pleased to support the open source community by making Tars
+ * available.
  *
  * Copyright (C) 2016THL A29 Limited, a Tencent company. All rights reserved.
  *
- * Licensed under the BSD 3-Clause License (the "License"); you may not use this file except 
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the BSD 3-Clause License (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  * https://opensource.org/licenses/BSD-3-Clause
  *
- * Unless required by applicable law or agreed to in writing, software distributed 
- * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the 
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 #include "ProxyImp.h"
@@ -20,64 +23,51 @@
 using namespace std;
 using namespace tars;
 using namespace TarsTest;
-class BServantCallback : public BServantPrxCallback
-{
+class BServantCallback : public BServantPrxCallback {
+ public:
+  BServantCallback(TarsCurrentPtr &current) : _current(current) {}
 
-public:
-    BServantCallback(TarsCurrentPtr &current)
-    : _current(current)
-    {}
+  virtual void callback_testHello(tars::Int32 ret, const std::string &sOut) {
+    Proxy::async_response_testProxy(_current, ret, sOut);
+  }
+  virtual void callback_testHello_exception(tars::Int32 ret) {
+    TLOGERROR("HelloCallback callback_testHello_exception ret:" << ret << endl);
 
-    virtual void callback_testHello(tars::Int32 ret,  const std::string& sOut)
-    {
-        Proxy::async_response_testProxy(_current, ret, sOut);
-    }
-    virtual void callback_testHello_exception(tars::Int32 ret)
-    { 
-        TLOGERROR("HelloCallback callback_testHello_exception ret:" << ret << endl); 
+    Proxy::async_response_testProxy(_current, ret, "");
+  }
 
-        Proxy::async_response_testProxy(_current, ret, "");
-    }
-
-    TarsCurrentPtr _current;
+  TarsCurrentPtr _current;
 };
 
-
-
 //////////////////////////////////////////////////////
-void ProxyImp::initialize()
-{
-    //initialize servant here:
-    //...
-    ;
-   _prx=Application::getCommunicator()->stringToProxy<BServantPrx>("TarsTest.UnitTest.BServantObj@tcp -h 127.0.0.1 -p 10007");
+void ProxyImp::initialize() {
+  // initialize servant here:
+  //...
+  ;
+  _prx = Application::getCommunicator()->stringToProxy<BServantPrx>(
+      "TarsTest.UnitTest.BServantObj@tcp -h 127.0.0.1 -p 10007");
 }
 
 //////////////////////////////////////////////////////
-void ProxyImp::destroy()
-{
-}
-  
-//////////////////////////////////////////////////////
-tars::Int32 ProxyImp::test(tars::TarsCurrentPtr current) { return 0;}
+void ProxyImp::destroy() {}
 
 //////////////////////////////////////////////////////
-tars::Int32 ProxyImp::testProxy(const std::string& sIn, std::string &sOut, tars::TarsCurrentPtr current)
-{
-    try
-    {
-        current->setResponse(false);
+tars::Int32 ProxyImp::test(tars::TarsCurrentPtr current) { return 0; }
 
-        BServantPrxCallbackPtr cb = new BServantCallback(current);
-       
-        _prx->async_testHello(cb,sIn);
-    }
-    catch(std::exception &ex)
-    {
-        current->setResponse(true);
+//////////////////////////////////////////////////////
+tars::Int32 ProxyImp::testProxy(const std::string &sIn, std::string &sOut,
+                                tars::TarsCurrentPtr current) {
+  try {
+    current->setResponse(false);
 
-        TLOGERROR("ProxyImp::testProxy ex:" << ex.what() << endl);
-    }
+    BServantPrxCallbackPtr cb = new BServantCallback(current);
 
-    return 0;
+    _prx->async_testHello(cb, sIn);
+  } catch (std::exception &ex) {
+    current->setResponse(true);
+
+    TLOGERROR("ProxyImp::testProxy ex:" << ex.what() << endl);
+  }
+
+  return 0;
 }

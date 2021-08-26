@@ -5,19 +5,17 @@
 
 using namespace tars;
 
-class AuthServer : public Application
-{
-protected:
-    /**
-     * ��ʼ��, ֻ����̵���һ��
-     */
-    virtual void initialize();
+class AuthServer : public Application {
+ protected:
+  /**
+   * ��ʼ��, ֻ����̵���һ��
+   */
+  virtual void initialize();
 
-    /**
-     * ����, ÿ�����̶������һ��
-     */
-    virtual void destroyApp();
+  /**
+   * ����, ÿ�����̶������һ��
+   */
+  virtual void destroyApp();
 };
 
 #endif
-

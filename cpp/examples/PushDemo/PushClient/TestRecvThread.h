@@ -3,27 +3,25 @@
 
 #include "servant/Application.h"
 
-class TestPushCallBack : public ServantProxyCallback
-{
-public:
-	virtual int onDispatch(ReqMessagePtr msg);
+class TestPushCallBack : public ServantProxyCallback {
+ public:
+  virtual int onDispatch(ReqMessagePtr msg);
 };
 
 typedef tars::TC_AutoPtr<TestPushCallBack> TestPushCallBackPtr;
 
-class RecvThread : public TC_Thread, public TC_ThreadLock
-{
-public:
-	RecvThread(int second);
+class RecvThread : public TC_Thread, public TC_ThreadLock {
+ public:
+  RecvThread(int second);
 
-	virtual void run();
+  virtual void run();
 
-private:
-	int _second;
-	bool _bTerminate;
+ private:
+  int _second;
+  bool _bTerminate;
 
-	Communicator _comm;
+  Communicator _comm;
 
-	ServantPrx  _prx;
+  ServantPrx _prx;
 };
 #endif

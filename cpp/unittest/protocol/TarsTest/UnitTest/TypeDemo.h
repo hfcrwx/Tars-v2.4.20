@@ -12,2112 +12,1886 @@
 #include "tup/Tars.h"
 #include "tup/TarsJson.h"
 using namespace std;
-#include "servant/ServantProxy.h"
 #include "servant/Servant.h"
+#include "servant/ServantProxy.h"
 
+namespace TarsTest {
 
-namespace TarsTest
-{
+/* callback of async proxy for client */
+class TypeDemoPrxCallback : public tars::ServantProxyCallback {
+ public:
+  virtual ~TypeDemoPrxCallback() {}
+  virtual void callback_echoBool(tars::Int32 ret, tars::Bool bEcho) {
+    throw std::runtime_error("callback_echoBool() override incorrect.");
+  }
+  virtual void callback_echoBool_exception(tars::Int32 ret) {
+    throw std::runtime_error(
+        "callback_echoBool_exception() override incorrect.");
+  }
 
-    /* callback of async proxy for client */
-    class TypeDemoPrxCallback: public tars::ServantProxyCallback
-    {
-    public:
-        virtual ~TypeDemoPrxCallback(){}
-        virtual void callback_echoBool(tars::Int32 ret, tars::Bool bEcho)
-        { throw std::runtime_error("callback_echoBool() override incorrect."); }
-        virtual void callback_echoBool_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_echoBool_exception() override incorrect."); }
+  virtual void callback_echoByte(tars::Int32 ret, tars::Char bEcho) {
+    throw std::runtime_error("callback_echoByte() override incorrect.");
+  }
+  virtual void callback_echoByte_exception(tars::Int32 ret) {
+    throw std::runtime_error(
+        "callback_echoByte_exception() override incorrect.");
+  }
 
-        virtual void callback_echoByte(tars::Int32 ret, tars::Char bEcho)
-        { throw std::runtime_error("callback_echoByte() override incorrect."); }
-        virtual void callback_echoByte_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_echoByte_exception() override incorrect."); }
+  virtual void callback_echoInt(tars::Int32 ret, tars::Int32 iEcho) {
+    throw std::runtime_error("callback_echoInt() override incorrect.");
+  }
+  virtual void callback_echoInt_exception(tars::Int32 ret) {
+    throw std::runtime_error(
+        "callback_echoInt_exception() override incorrect.");
+  }
 
-        virtual void callback_echoInt(tars::Int32 ret, tars::Int32 iEcho)
-        { throw std::runtime_error("callback_echoInt() override incorrect."); }
-        virtual void callback_echoInt_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_echoInt_exception() override incorrect."); }
+  virtual void callback_echoLong(tars::Int32 ret, tars::Int64 lEcho) {
+    throw std::runtime_error("callback_echoLong() override incorrect.");
+  }
+  virtual void callback_echoLong_exception(tars::Int32 ret) {
+    throw std::runtime_error(
+        "callback_echoLong_exception() override incorrect.");
+  }
 
-        virtual void callback_echoLong(tars::Int32 ret, tars::Int64 lEcho)
-        { throw std::runtime_error("callback_echoLong() override incorrect."); }
-        virtual void callback_echoLong_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_echoLong_exception() override incorrect."); }
+  virtual void callback_echoMap(tars::Int32 ret,
+                                const map<tars::Int32, std::string> &mEcho) {
+    throw std::runtime_error("callback_echoMap() override incorrect.");
+  }
+  virtual void callback_echoMap_exception(tars::Int32 ret) {
+    throw std::runtime_error(
+        "callback_echoMap_exception() override incorrect.");
+  }
 
-        virtual void callback_echoMap(tars::Int32 ret,  const map<tars::Int32, std::string>& mEcho)
-        { throw std::runtime_error("callback_echoMap() override incorrect."); }
-        virtual void callback_echoMap_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_echoMap_exception() override incorrect."); }
+  virtual void callback_echoMultiType(
+      tars::Int32 ret, const vector<map<tars::Int32, std::string> > &mtEcho) {
+    throw std::runtime_error("callback_echoMultiType() override incorrect.");
+  }
+  virtual void callback_echoMultiType_exception(tars::Int32 ret) {
+    throw std::runtime_error(
+        "callback_echoMultiType_exception() override incorrect.");
+  }
 
-        virtual void callback_echoMultiType(tars::Int32 ret,  const vector<map<tars::Int32, std::string> >& mtEcho)
-        { throw std::runtime_error("callback_echoMultiType() override incorrect."); }
-        virtual void callback_echoMultiType_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_echoMultiType_exception() override incorrect."); }
+  virtual void callback_echoShort(tars::Int32 ret, tars::Short sEcho) {
+    throw std::runtime_error("callback_echoShort() override incorrect.");
+  }
+  virtual void callback_echoShort_exception(tars::Int32 ret) {
+    throw std::runtime_error(
+        "callback_echoShort_exception() override incorrect.");
+  }
 
-        virtual void callback_echoShort(tars::Int32 ret, tars::Short sEcho)
-        { throw std::runtime_error("callback_echoShort() override incorrect."); }
-        virtual void callback_echoShort_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_echoShort_exception() override incorrect."); }
+  virtual void callback_echoString(tars::Int32 ret,
+                                   const std::string &strEcho) {
+    throw std::runtime_error("callback_echoString() override incorrect.");
+  }
+  virtual void callback_echoString_exception(tars::Int32 ret) {
+    throw std::runtime_error(
+        "callback_echoString_exception() override incorrect.");
+  }
 
-        virtual void callback_echoString(tars::Int32 ret,  const std::string& strEcho)
-        { throw std::runtime_error("callback_echoString() override incorrect."); }
-        virtual void callback_echoString_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_echoString_exception() override incorrect."); }
+  virtual void callback_echoVector(tars::Int32 ret,
+                                   const vector<tars::Int32> &vEcho) {
+    throw std::runtime_error("callback_echoVector() override incorrect.");
+  }
+  virtual void callback_echoVector_exception(tars::Int32 ret) {
+    throw std::runtime_error(
+        "callback_echoVector_exception() override incorrect.");
+  }
 
-        virtual void callback_echoVector(tars::Int32 ret,  const vector<tars::Int32>& vEcho)
-        { throw std::runtime_error("callback_echoVector() override incorrect."); }
-        virtual void callback_echoVector_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_echoVector_exception() override incorrect."); }
+  virtual void callback_test(tars::Int32 ret) {
+    throw std::runtime_error("callback_test() override incorrect.");
+  }
+  virtual void callback_test_exception(tars::Int32 ret) {
+    throw std::runtime_error("callback_test_exception() override incorrect.");
+  }
 
-        virtual void callback_test(tars::Int32 ret)
-        { throw std::runtime_error("callback_test() override incorrect."); }
-        virtual void callback_test_exception(tars::Int32 ret)
-        { throw std::runtime_error("callback_test_exception() override incorrect."); }
+ public:
+  virtual const map<std::string, std::string> &getResponseContext() const {
+    CallbackThreadData *pCbtd = CallbackThreadData::getData();
+    assert(pCbtd != NULL);
 
-    public:
-        virtual const map<std::string, std::string> & getResponseContext() const
-        {
-            CallbackThreadData * pCbtd = CallbackThreadData::getData();
-            assert(pCbtd != NULL);
+    if (!pCbtd->getContextValid()) {
+      throw TC_Exception("cann't get response context");
+    }
+    return pCbtd->getResponseContext();
+  }
 
-            if(!pCbtd->getContextValid())
-            {
-                throw TC_Exception("cann't get response context");
-            }
-            return pCbtd->getResponseContext();
+ public:
+  virtual int onDispatch(tars::ReqMessagePtr msg) {
+    static ::std::string __TypeDemo_all[] = {
+        "echoBool",      "echoByte",  "echoInt",    "echoLong",   "echoMap",
+        "echoMultiType", "echoShort", "echoString", "echoVector", "test"};
+    pair<string *, string *> r = equal_range(
+        __TypeDemo_all, __TypeDemo_all + 10, string(msg->request.sFuncName));
+    if (r.first == r.second) return tars::TARSSERVERNOFUNCERR;
+    switch (r.first - __TypeDemo_all) {
+      case 0: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoBool_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        tars::Bool bEcho = false;
+        _is.read(bEcho, 2, true);
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response->context);
+
+        callback_echoBool(_ret, bEcho);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 1: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoByte_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        tars::Char bEcho;
+        _is.read(bEcho, 2, true);
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response->context);
+
+        callback_echoByte(_ret, bEcho);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 2: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoInt_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        tars::Int32 iEcho;
+        _is.read(iEcho, 2, true);
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response->context);
+
+        callback_echoInt(_ret, iEcho);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 3: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoLong_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        tars::Int64 lEcho;
+        _is.read(lEcho, 2, true);
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response->context);
+
+        callback_echoLong(_ret, lEcho);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 4: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoMap_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        map<tars::Int32, std::string> mEcho;
+        _is.read(mEcho, 2, true);
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response->context);
+
+        callback_echoMap(_ret, mEcho);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 5: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoMultiType_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        vector<map<tars::Int32, std::string> > mtEcho;
+        _is.read(mtEcho, 2, true);
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response->context);
+
+        callback_echoMultiType(_ret, mtEcho);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 6: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoShort_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        tars::Short sEcho;
+        _is.read(sEcho, 2, true);
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response->context);
+
+        callback_echoShort(_ret, sEcho);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 7: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoString_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        std::string strEcho;
+        _is.read(strEcho, 2, true);
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response->context);
+
+        callback_echoString(_ret, strEcho);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 8: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoVector_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        vector<tars::Int32> vEcho;
+        _is.read(vEcho, 2, true);
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response->context);
+
+        callback_echoVector(_ret, vEcho);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 9: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_test_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        tars::Int32 _ret;
+        _is.read(_ret, 0, true);
+
+        CallbackThreadData *pCbtd = CallbackThreadData::getData();
+        assert(pCbtd != NULL);
+
+        pCbtd->setResponseContext(msg->response->context);
+
+        callback_test(_ret);
+
+        pCbtd->delResponseContext();
+
+        return tars::TARSSERVERSUCCESS;
+      }
+    }
+    return tars::TARSSERVERNOFUNCERR;
+  }
+};
+typedef tars::TC_AutoPtr<TypeDemoPrxCallback> TypeDemoPrxCallbackPtr;
+
+/* callback of coroutine async proxy for client */
+class TypeDemoCoroPrxCallback : public TypeDemoPrxCallback {
+ public:
+  virtual ~TypeDemoCoroPrxCallback() {}
+
+ public:
+  virtual const map<std::string, std::string> &getResponseContext() const {
+    return _mRspContext;
+  }
+
+  virtual void setResponseContext(
+      const map<std::string, std::string> &mContext) {
+    _mRspContext = mContext;
+  }
+
+ public:
+  int onDispatch(tars::ReqMessagePtr msg) {
+    static ::std::string __TypeDemo_all[] = {
+        "echoBool",      "echoByte",  "echoInt",    "echoLong",   "echoMap",
+        "echoMultiType", "echoShort", "echoString", "echoVector", "test"};
+
+    pair<string *, string *> r = equal_range(
+        __TypeDemo_all, __TypeDemo_all + 10, string(msg->request.sFuncName));
+    if (r.first == r.second) return tars::TARSSERVERNOFUNCERR;
+    switch (r.first - __TypeDemo_all) {
+      case 0: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoBool_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
+
+          tars::Bool bEcho = false;
+          _is.read(bEcho, 2, true);
+          setResponseContext(msg->response->context);
+
+          callback_echoBool(_ret, bEcho);
+
+        } catch (std::exception &ex) {
+          callback_echoBool_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_echoBool_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
         }
 
-    public:
-        virtual int onDispatch(tars::ReqMessagePtr msg)
-        {
-            static ::std::string __TypeDemo_all[]=
-            {
-                "echoBool",
-                "echoByte",
-                "echoInt",
-                "echoLong",
-                "echoMap",
-                "echoMultiType",
-                "echoShort",
-                "echoString",
-                "echoVector",
-                "test"
-            };
-            pair<string*, string*> r = equal_range(__TypeDemo_all, __TypeDemo_all+10, string(msg->request.sFuncName));
-            if(r.first == r.second) return tars::TARSSERVERNOFUNCERR;
-            switch(r.first - __TypeDemo_all)
-            {
-                case 0:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoBool_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    tars::Bool bEcho = false;
-                    _is.read(bEcho, 2, true);
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response->context);
-
-                    callback_echoBool(_ret, bEcho);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 1:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoByte_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    tars::Char bEcho;
-                    _is.read(bEcho, 2, true);
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response->context);
-
-                    callback_echoByte(_ret, bEcho);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 2:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoInt_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    tars::Int32 iEcho;
-                    _is.read(iEcho, 2, true);
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response->context);
-
-                    callback_echoInt(_ret, iEcho);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 3:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoLong_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    tars::Int64 lEcho;
-                    _is.read(lEcho, 2, true);
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response->context);
-
-                    callback_echoLong(_ret, lEcho);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 4:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoMap_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    map<tars::Int32, std::string> mEcho;
-                    _is.read(mEcho, 2, true);
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response->context);
-
-                    callback_echoMap(_ret, mEcho);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 5:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoMultiType_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    vector<map<tars::Int32, std::string> > mtEcho;
-                    _is.read(mtEcho, 2, true);
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response->context);
-
-                    callback_echoMultiType(_ret, mtEcho);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 6:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoShort_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    tars::Short sEcho;
-                    _is.read(sEcho, 2, true);
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response->context);
-
-                    callback_echoShort(_ret, sEcho);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 7:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoString_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    std::string strEcho;
-                    _is.read(strEcho, 2, true);
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response->context);
-
-                    callback_echoString(_ret, strEcho);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 8:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoVector_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    vector<tars::Int32> vEcho;
-                    _is.read(vEcho, 2, true);
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response->context);
-
-                    callback_echoVector(_ret, vEcho);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 9:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_test_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    tars::Int32 _ret;
-                    _is.read(_ret, 0, true);
-
-                    CallbackThreadData * pCbtd = CallbackThreadData::getData();
-                    assert(pCbtd != NULL);
-
-                    pCbtd->setResponseContext(msg->response->context);
-
-                    callback_test(_ret);
-
-                    pCbtd->delResponseContext();
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-            }
-            return tars::TARSSERVERNOFUNCERR;
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 1: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoByte_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
+
+          tars::Char bEcho;
+          _is.read(bEcho, 2, true);
+          setResponseContext(msg->response->context);
+
+          callback_echoByte(_ret, bEcho);
+
+        } catch (std::exception &ex) {
+          callback_echoByte_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_echoByte_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
         }
 
-    };
-    typedef tars::TC_AutoPtr<TypeDemoPrxCallback> TypeDemoPrxCallbackPtr;
-
-    /* callback of coroutine async proxy for client */
-    class TypeDemoCoroPrxCallback: public TypeDemoPrxCallback
-    {
-    public:
-        virtual ~TypeDemoCoroPrxCallback(){}
-    public:
-        virtual const map<std::string, std::string> & getResponseContext() const { return _mRspContext; }
-
-        virtual void setResponseContext(const map<std::string, std::string> &mContext) { _mRspContext = mContext; }
-
-    public:
-        int onDispatch(tars::ReqMessagePtr msg)
-        {
-            static ::std::string __TypeDemo_all[]=
-            {
-                "echoBool",
-                "echoByte",
-                "echoInt",
-                "echoLong",
-                "echoMap",
-                "echoMultiType",
-                "echoShort",
-                "echoString",
-                "echoVector",
-                "test"
-            };
-
-            pair<string*, string*> r = equal_range(__TypeDemo_all, __TypeDemo_all+10, string(msg->request.sFuncName));
-            if(r.first == r.second) return tars::TARSSERVERNOFUNCERR;
-            switch(r.first - __TypeDemo_all)
-            {
-                case 0:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoBool_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
-
-                        tars::Bool bEcho = false;
-                        _is.read(bEcho, 2, true);
-                        setResponseContext(msg->response->context);
-
-                        callback_echoBool(_ret, bEcho);
-
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_echoBool_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_echoBool_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 1:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoByte_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
-
-                        tars::Char bEcho;
-                        _is.read(bEcho, 2, true);
-                        setResponseContext(msg->response->context);
-
-                        callback_echoByte(_ret, bEcho);
-
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_echoByte_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_echoByte_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 2:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoInt_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
-
-                        tars::Int32 iEcho;
-                        _is.read(iEcho, 2, true);
-                        setResponseContext(msg->response->context);
-
-                        callback_echoInt(_ret, iEcho);
-
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_echoInt_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_echoInt_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 3:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoLong_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
-
-                        tars::Int64 lEcho;
-                        _is.read(lEcho, 2, true);
-                        setResponseContext(msg->response->context);
-
-                        callback_echoLong(_ret, lEcho);
-
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_echoLong_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_echoLong_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 4:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoMap_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
-
-                        map<tars::Int32, std::string> mEcho;
-                        _is.read(mEcho, 2, true);
-                        setResponseContext(msg->response->context);
-
-                        callback_echoMap(_ret, mEcho);
-
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_echoMap_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_echoMap_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 5:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoMultiType_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
-
-                        vector<map<tars::Int32, std::string> > mtEcho;
-                        _is.read(mtEcho, 2, true);
-                        setResponseContext(msg->response->context);
-
-                        callback_echoMultiType(_ret, mtEcho);
-
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_echoMultiType_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_echoMultiType_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 6:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoShort_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
-
-                        tars::Short sEcho;
-                        _is.read(sEcho, 2, true);
-                        setResponseContext(msg->response->context);
-
-                        callback_echoShort(_ret, sEcho);
-
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_echoShort_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_echoShort_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 7:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoString_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
-
-                        std::string strEcho;
-                        _is.read(strEcho, 2, true);
-                        setResponseContext(msg->response->context);
-
-                        callback_echoString(_ret, strEcho);
-
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_echoString_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_echoString_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 8:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_echoVector_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
-
-                        vector<tars::Int32> vEcho;
-                        _is.read(vEcho, 2, true);
-                        setResponseContext(msg->response->context);
-
-                        callback_echoVector(_ret, vEcho);
-
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_echoVector_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_echoVector_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 9:
-                {
-                    if (msg->response->iRet != tars::TARSSERVERSUCCESS)
-                    {
-                        callback_test_exception(msg->response->iRet);
-
-                        return msg->response->iRet;
-                    }
-                    tars::TarsInputStream<tars::BufferReader> _is;
-
-                    _is.setBuffer(msg->response->sBuffer);
-                    try
-                    {
-                        tars::Int32 _ret;
-                        _is.read(_ret, 0, true);
-
-                        setResponseContext(msg->response->context);
-
-                        callback_test(_ret);
-
-                    }
-                    catch(std::exception &ex)
-                    {
-                        callback_test_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-                    catch(...)
-                    {
-                        callback_test_exception(tars::TARSCLIENTDECODEERR);
-
-                        return tars::TARSCLIENTDECODEERR;
-                    }
-
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-            }
-            return tars::TARSSERVERNOFUNCERR;
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 2: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoInt_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
+
+          tars::Int32 iEcho;
+          _is.read(iEcho, 2, true);
+          setResponseContext(msg->response->context);
+
+          callback_echoInt(_ret, iEcho);
+
+        } catch (std::exception &ex) {
+          callback_echoInt_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_echoInt_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
         }
 
-    protected:
-        map<std::string, std::string> _mRspContext;
-    };
-    typedef tars::TC_AutoPtr<TypeDemoCoroPrxCallback> TypeDemoCoroPrxCallbackPtr;
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 3: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoLong_exception(msg->response->iRet);
 
-    /* proxy for client */
-    class TypeDemoProxy : public tars::ServantProxy
-    {
-    public:
-        typedef map<string, string> TARS_CONTEXT;
-        tars::Int32 echoBool(tars::Bool bInput,tars::Bool &bEcho,const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
+
+          tars::Int64 lEcho;
+          _is.read(lEcho, 2, true);
+          setResponseContext(msg->response->context);
+
+          callback_echoLong(_ret, lEcho);
+
+        } catch (std::exception &ex) {
+          callback_echoLong_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_echoLong_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        }
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 4: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoMap_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
+
+          map<tars::Int32, std::string> mEcho;
+          _is.read(mEcho, 2, true);
+          setResponseContext(msg->response->context);
+
+          callback_echoMap(_ret, mEcho);
+
+        } catch (std::exception &ex) {
+          callback_echoMap_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_echoMap_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        }
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 5: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoMultiType_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
+
+          vector<map<tars::Int32, std::string> > mtEcho;
+          _is.read(mtEcho, 2, true);
+          setResponseContext(msg->response->context);
+
+          callback_echoMultiType(_ret, mtEcho);
+
+        } catch (std::exception &ex) {
+          callback_echoMultiType_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_echoMultiType_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        }
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 6: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoShort_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
+
+          tars::Short sEcho;
+          _is.read(sEcho, 2, true);
+          setResponseContext(msg->response->context);
+
+          callback_echoShort(_ret, sEcho);
+
+        } catch (std::exception &ex) {
+          callback_echoShort_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_echoShort_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        }
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 7: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoString_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
+
+          std::string strEcho;
+          _is.read(strEcho, 2, true);
+          setResponseContext(msg->response->context);
+
+          callback_echoString(_ret, strEcho);
+
+        } catch (std::exception &ex) {
+          callback_echoString_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_echoString_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        }
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 8: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_echoVector_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
+
+          vector<tars::Int32> vEcho;
+          _is.read(vEcho, 2, true);
+          setResponseContext(msg->response->context);
+
+          callback_echoVector(_ret, vEcho);
+
+        } catch (std::exception &ex) {
+          callback_echoVector_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_echoVector_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        }
+
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 9: {
+        if (msg->response->iRet != tars::TARSSERVERSUCCESS) {
+          callback_test_exception(msg->response->iRet);
+
+          return msg->response->iRet;
+        }
+        tars::TarsInputStream<tars::BufferReader> _is;
+
+        _is.setBuffer(msg->response->sBuffer);
+        try {
+          tars::Int32 _ret;
+          _is.read(_ret, 0, true);
+
+          setResponseContext(msg->response->context);
+
+          callback_test(_ret);
+
+        } catch (std::exception &ex) {
+          callback_test_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        } catch (...) {
+          callback_test_exception(tars::TARSCLIENTDECODEERR);
+
+          return tars::TARSCLIENTDECODEERR;
+        }
+
+        return tars::TARSSERVERSUCCESS;
+      }
+    }
+    return tars::TARSSERVERNOFUNCERR;
+  }
+
+ protected:
+  map<std::string, std::string> _mRspContext;
+};
+typedef tars::TC_AutoPtr<TypeDemoCoroPrxCallback> TypeDemoCoroPrxCallbackPtr;
+
+/* proxy for client */
+class TypeDemoProxy : public tars::ServantProxy {
+ public:
+  typedef map<string, string> TARS_CONTEXT;
+  tars::Int32 echoBool(tars::Bool bInput, tars::Bool &bEcho,
+                       const map<string, string> &context = TARS_CONTEXT(),
+                       map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(bInput, 1);
+    _os.write(bEcho, 2);
+    std::map<string, string> _mStatus;
+    shared_ptr<tars::ResponsePacket> rep =
+        tars_invoke(tars::TARSNORMAL, "echoBool", _os, context, _mStatus);
+    if (pResponseContext) {
+      pResponseContext->swap(rep->context);
+    }
+
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep->sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    _is.read(bEcho, 2, true);
+    return _ret;
+  }
+
+  void async_echoBool(TypeDemoPrxCallbackPtr callback, tars::Bool bInput,
+                      const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(bInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoBool", _os, context, _mStatus,
+                      callback);
+  }
+
+  void coro_echoBool(TypeDemoCoroPrxCallbackPtr callback, tars::Bool bInput,
+                     const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(bInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoBool", _os, context, _mStatus,
+                      callback, true);
+  }
+
+  tars::Int32 echoByte(tars::Char bInput, tars::Char &bEcho,
+                       const map<string, string> &context = TARS_CONTEXT(),
+                       map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(bInput, 1);
+    _os.write(bEcho, 2);
+    std::map<string, string> _mStatus;
+    shared_ptr<tars::ResponsePacket> rep =
+        tars_invoke(tars::TARSNORMAL, "echoByte", _os, context, _mStatus);
+    if (pResponseContext) {
+      pResponseContext->swap(rep->context);
+    }
+
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep->sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    _is.read(bEcho, 2, true);
+    return _ret;
+  }
+
+  void async_echoByte(TypeDemoPrxCallbackPtr callback, tars::Char bInput,
+                      const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(bInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoByte", _os, context, _mStatus,
+                      callback);
+  }
+
+  void coro_echoByte(TypeDemoCoroPrxCallbackPtr callback, tars::Char bInput,
+                     const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(bInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoByte", _os, context, _mStatus,
+                      callback, true);
+  }
+
+  tars::Int32 echoInt(tars::Int32 iInput, tars::Int32 &iEcho,
+                      const map<string, string> &context = TARS_CONTEXT(),
+                      map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(iInput, 1);
+    _os.write(iEcho, 2);
+    std::map<string, string> _mStatus;
+    shared_ptr<tars::ResponsePacket> rep =
+        tars_invoke(tars::TARSNORMAL, "echoInt", _os, context, _mStatus);
+    if (pResponseContext) {
+      pResponseContext->swap(rep->context);
+    }
+
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep->sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    _is.read(iEcho, 2, true);
+    return _ret;
+  }
+
+  void async_echoInt(TypeDemoPrxCallbackPtr callback, tars::Int32 iInput,
+                     const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(iInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoInt", _os, context, _mStatus,
+                      callback);
+  }
+
+  void coro_echoInt(TypeDemoCoroPrxCallbackPtr callback, tars::Int32 iInput,
+                    const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(iInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoInt", _os, context, _mStatus,
+                      callback, true);
+  }
+
+  tars::Int32 echoLong(tars::Int64 lInput, tars::Int64 &lEcho,
+                       const map<string, string> &context = TARS_CONTEXT(),
+                       map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(lInput, 1);
+    _os.write(lEcho, 2);
+    std::map<string, string> _mStatus;
+    shared_ptr<tars::ResponsePacket> rep =
+        tars_invoke(tars::TARSNORMAL, "echoLong", _os, context, _mStatus);
+    if (pResponseContext) {
+      pResponseContext->swap(rep->context);
+    }
+
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep->sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    _is.read(lEcho, 2, true);
+    return _ret;
+  }
+
+  void async_echoLong(TypeDemoPrxCallbackPtr callback, tars::Int64 lInput,
+                      const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(lInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoLong", _os, context, _mStatus,
+                      callback);
+  }
+
+  void coro_echoLong(TypeDemoCoroPrxCallbackPtr callback, tars::Int64 lInput,
+                     const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(lInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoLong", _os, context, _mStatus,
+                      callback, true);
+  }
+
+  tars::Int32 echoMap(const map<tars::Int32, std::string> &mInput,
+                      map<tars::Int32, std::string> &mEcho,
+                      const map<string, string> &context = TARS_CONTEXT(),
+                      map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(mInput, 1);
+    _os.write(mEcho, 2);
+    std::map<string, string> _mStatus;
+    shared_ptr<tars::ResponsePacket> rep =
+        tars_invoke(tars::TARSNORMAL, "echoMap", _os, context, _mStatus);
+    if (pResponseContext) {
+      pResponseContext->swap(rep->context);
+    }
+
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep->sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    _is.read(mEcho, 2, true);
+    return _ret;
+  }
+
+  void async_echoMap(TypeDemoPrxCallbackPtr callback,
+                     const map<tars::Int32, std::string> &mInput,
+                     const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(mInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoMap", _os, context, _mStatus,
+                      callback);
+  }
+
+  void coro_echoMap(TypeDemoCoroPrxCallbackPtr callback,
+                    const map<tars::Int32, std::string> &mInput,
+                    const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(mInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoMap", _os, context, _mStatus,
+                      callback, true);
+  }
+
+  tars::Int32 echoMultiType(
+      const vector<map<tars::Int32, std::string> > &mtInput,
+      vector<map<tars::Int32, std::string> > &mtEcho,
+      const map<string, string> &context = TARS_CONTEXT(),
+      map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(mtInput, 1);
+    _os.write(mtEcho, 2);
+    std::map<string, string> _mStatus;
+    shared_ptr<tars::ResponsePacket> rep =
+        tars_invoke(tars::TARSNORMAL, "echoMultiType", _os, context, _mStatus);
+    if (pResponseContext) {
+      pResponseContext->swap(rep->context);
+    }
+
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep->sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    _is.read(mtEcho, 2, true);
+    return _ret;
+  }
+
+  void async_echoMultiType(
+      TypeDemoPrxCallbackPtr callback,
+      const vector<map<tars::Int32, std::string> > &mtInput,
+      const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(mtInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoMultiType", _os, context, _mStatus,
+                      callback);
+  }
+
+  void coro_echoMultiType(TypeDemoCoroPrxCallbackPtr callback,
+                          const vector<map<tars::Int32, std::string> > &mtInput,
+                          const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(mtInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoMultiType", _os, context, _mStatus,
+                      callback, true);
+  }
+
+  tars::Int32 echoShort(tars::Short sInput, tars::Short &sEcho,
+                        const map<string, string> &context = TARS_CONTEXT(),
+                        map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(sInput, 1);
+    _os.write(sEcho, 2);
+    std::map<string, string> _mStatus;
+    shared_ptr<tars::ResponsePacket> rep =
+        tars_invoke(tars::TARSNORMAL, "echoShort", _os, context, _mStatus);
+    if (pResponseContext) {
+      pResponseContext->swap(rep->context);
+    }
+
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep->sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    _is.read(sEcho, 2, true);
+    return _ret;
+  }
+
+  void async_echoShort(TypeDemoPrxCallbackPtr callback, tars::Short sInput,
+                       const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(sInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoShort", _os, context, _mStatus,
+                      callback);
+  }
+
+  void coro_echoShort(TypeDemoCoroPrxCallbackPtr callback, tars::Short sInput,
+                      const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(sInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoShort", _os, context, _mStatus,
+                      callback, true);
+  }
+
+  tars::Int32 echoString(const std::string &strInput, std::string &strEcho,
+                         const map<string, string> &context = TARS_CONTEXT(),
+                         map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(strInput, 1);
+    _os.write(strEcho, 2);
+    std::map<string, string> _mStatus;
+    shared_ptr<tars::ResponsePacket> rep =
+        tars_invoke(tars::TARSNORMAL, "echoString", _os, context, _mStatus);
+    if (pResponseContext) {
+      pResponseContext->swap(rep->context);
+    }
+
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep->sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    _is.read(strEcho, 2, true);
+    return _ret;
+  }
+
+  void async_echoString(TypeDemoPrxCallbackPtr callback,
+                        const std::string &strInput,
+                        const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(strInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoString", _os, context, _mStatus,
+                      callback);
+  }
+
+  void coro_echoString(TypeDemoCoroPrxCallbackPtr callback,
+                       const std::string &strInput,
+                       const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(strInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoString", _os, context, _mStatus,
+                      callback, true);
+  }
+
+  tars::Int32 echoVector(const vector<tars::Int32> &vInput,
+                         vector<tars::Int32> &vEcho,
+                         const map<string, string> &context = TARS_CONTEXT(),
+                         map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(vInput, 1);
+    _os.write(vEcho, 2);
+    std::map<string, string> _mStatus;
+    shared_ptr<tars::ResponsePacket> rep =
+        tars_invoke(tars::TARSNORMAL, "echoVector", _os, context, _mStatus);
+    if (pResponseContext) {
+      pResponseContext->swap(rep->context);
+    }
+
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep->sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    _is.read(vEcho, 2, true);
+    return _ret;
+  }
+
+  void async_echoVector(TypeDemoPrxCallbackPtr callback,
+                        const vector<tars::Int32> &vInput,
+                        const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(vInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoVector", _os, context, _mStatus,
+                      callback);
+  }
+
+  void coro_echoVector(TypeDemoCoroPrxCallbackPtr callback,
+                       const vector<tars::Int32> &vInput,
+                       const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    _os.write(vInput, 1);
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "echoVector", _os, context, _mStatus,
+                      callback, true);
+  }
+
+  tars::Int32 test(const map<string, string> &context = TARS_CONTEXT(),
+                   map<string, string> *pResponseContext = NULL) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    std::map<string, string> _mStatus;
+    shared_ptr<tars::ResponsePacket> rep =
+        tars_invoke(tars::TARSNORMAL, "test", _os, context, _mStatus);
+    if (pResponseContext) {
+      pResponseContext->swap(rep->context);
+    }
+
+    tars::TarsInputStream<tars::BufferReader> _is;
+    _is.setBuffer(rep->sBuffer);
+    tars::Int32 _ret;
+    _is.read(_ret, 0, true);
+    return _ret;
+  }
+
+  void async_test(TypeDemoPrxCallbackPtr callback,
+                  const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "test", _os, context, _mStatus,
+                      callback);
+  }
+
+  void coro_test(TypeDemoCoroPrxCallbackPtr callback,
+                 const map<string, string> &context = TARS_CONTEXT()) {
+    tars::TarsOutputStream<tars::BufferWriterVector> _os;
+    std::map<string, string> _mStatus;
+    tars_invoke_async(tars::TARSNORMAL, "test", _os, context, _mStatus,
+                      callback, true);
+  }
+
+  TypeDemoProxy *tars_hash(int64_t key) {
+    return (TypeDemoProxy *)ServantProxy::tars_hash(key);
+  }
+
+  TypeDemoProxy *tars_consistent_hash(int64_t key) {
+    return (TypeDemoProxy *)ServantProxy::tars_consistent_hash(key);
+  }
+
+  TypeDemoProxy *tars_set_timeout(int msecond) {
+    return (TypeDemoProxy *)ServantProxy::tars_set_timeout(msecond);
+  }
+
+  static const char *tars_prxname() { return "TypeDemoProxy"; }
+};
+typedef tars::TC_AutoPtr<TypeDemoProxy> TypeDemoPrx;
+
+/* servant for server */
+class TypeDemo : public tars::Servant {
+ public:
+  virtual ~TypeDemo() {}
+  virtual tars::Int32 echoBool(tars::Bool bInput, tars::Bool &bEcho,
+                               tars::TarsCurrentPtr current) = 0;
+  static void async_response_echoBool(tars::TarsCurrentPtr current,
+                                      tars::Int32 _ret, tars::Bool bEcho) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("tars_ret", _ret);
+      tarsAttr.put("bEcho", bEcho);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else if (current->getRequestVersion() == JSONVERSION) {
+      tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+      _p->value["bEcho"] = tars::JsonOutput::writeJson(bEcho);
+      _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+      vector<char> sJsonResponseBuffer;
+      tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriterVector> _os;
+      _os.write(_ret, 0);
+
+      _os.write(bEcho, 2);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+  virtual tars::Int32 echoByte(tars::Char bInput, tars::Char &bEcho,
+                               tars::TarsCurrentPtr current) = 0;
+  static void async_response_echoByte(tars::TarsCurrentPtr current,
+                                      tars::Int32 _ret, tars::Char bEcho) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("tars_ret", _ret);
+      tarsAttr.put("bEcho", bEcho);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else if (current->getRequestVersion() == JSONVERSION) {
+      tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+      _p->value["bEcho"] = tars::JsonOutput::writeJson(bEcho);
+      _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+      vector<char> sJsonResponseBuffer;
+      tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriterVector> _os;
+      _os.write(_ret, 0);
+
+      _os.write(bEcho, 2);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+  virtual tars::Int32 echoInt(tars::Int32 iInput, tars::Int32 &iEcho,
+                              tars::TarsCurrentPtr current) = 0;
+  static void async_response_echoInt(tars::TarsCurrentPtr current,
+                                     tars::Int32 _ret, tars::Int32 iEcho) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("tars_ret", _ret);
+      tarsAttr.put("iEcho", iEcho);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else if (current->getRequestVersion() == JSONVERSION) {
+      tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+      _p->value["iEcho"] = tars::JsonOutput::writeJson(iEcho);
+      _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+      vector<char> sJsonResponseBuffer;
+      tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriterVector> _os;
+      _os.write(_ret, 0);
+
+      _os.write(iEcho, 2);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+  virtual tars::Int32 echoLong(tars::Int64 lInput, tars::Int64 &lEcho,
+                               tars::TarsCurrentPtr current) = 0;
+  static void async_response_echoLong(tars::TarsCurrentPtr current,
+                                      tars::Int32 _ret, tars::Int64 lEcho) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("tars_ret", _ret);
+      tarsAttr.put("lEcho", lEcho);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else if (current->getRequestVersion() == JSONVERSION) {
+      tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+      _p->value["lEcho"] = tars::JsonOutput::writeJson(lEcho);
+      _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+      vector<char> sJsonResponseBuffer;
+      tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriterVector> _os;
+      _os.write(_ret, 0);
+
+      _os.write(lEcho, 2);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+  virtual tars::Int32 echoMap(const map<tars::Int32, std::string> &mInput,
+                              map<tars::Int32, std::string> &mEcho,
+                              tars::TarsCurrentPtr current) = 0;
+  static void async_response_echoMap(
+      tars::TarsCurrentPtr current, tars::Int32 _ret,
+      const map<tars::Int32, std::string> &mEcho) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("tars_ret", _ret);
+      tarsAttr.put("mEcho", mEcho);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else if (current->getRequestVersion() == JSONVERSION) {
+      tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+      _p->value["mEcho"] = tars::JsonOutput::writeJson(mEcho);
+      _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+      vector<char> sJsonResponseBuffer;
+      tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriterVector> _os;
+      _os.write(_ret, 0);
+
+      _os.write(mEcho, 2);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+  virtual tars::Int32 echoMultiType(
+      const vector<map<tars::Int32, std::string> > &mtInput,
+      vector<map<tars::Int32, std::string> > &mtEcho,
+      tars::TarsCurrentPtr current) = 0;
+  static void async_response_echoMultiType(
+      tars::TarsCurrentPtr current, tars::Int32 _ret,
+      const vector<map<tars::Int32, std::string> > &mtEcho) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("tars_ret", _ret);
+      tarsAttr.put("mtEcho", mtEcho);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else if (current->getRequestVersion() == JSONVERSION) {
+      tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+      _p->value["mtEcho"] = tars::JsonOutput::writeJson(mtEcho);
+      _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+      vector<char> sJsonResponseBuffer;
+      tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriterVector> _os;
+      _os.write(_ret, 0);
+
+      _os.write(mtEcho, 2);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+  virtual tars::Int32 echoShort(tars::Short sInput, tars::Short &sEcho,
+                                tars::TarsCurrentPtr current) = 0;
+  static void async_response_echoShort(tars::TarsCurrentPtr current,
+                                       tars::Int32 _ret, tars::Short sEcho) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("tars_ret", _ret);
+      tarsAttr.put("sEcho", sEcho);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else if (current->getRequestVersion() == JSONVERSION) {
+      tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+      _p->value["sEcho"] = tars::JsonOutput::writeJson(sEcho);
+      _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+      vector<char> sJsonResponseBuffer;
+      tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriterVector> _os;
+      _os.write(_ret, 0);
+
+      _os.write(sEcho, 2);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+  virtual tars::Int32 echoString(const std::string &strInput,
+                                 std::string &strEcho,
+                                 tars::TarsCurrentPtr current) = 0;
+  static void async_response_echoString(tars::TarsCurrentPtr current,
+                                        tars::Int32 _ret,
+                                        const std::string &strEcho) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("tars_ret", _ret);
+      tarsAttr.put("strEcho", strEcho);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else if (current->getRequestVersion() == JSONVERSION) {
+      tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+      _p->value["strEcho"] = tars::JsonOutput::writeJson(strEcho);
+      _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+      vector<char> sJsonResponseBuffer;
+      tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriterVector> _os;
+      _os.write(_ret, 0);
+
+      _os.write(strEcho, 2);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+  virtual tars::Int32 echoVector(const vector<tars::Int32> &vInput,
+                                 vector<tars::Int32> &vEcho,
+                                 tars::TarsCurrentPtr current) = 0;
+  static void async_response_echoVector(tars::TarsCurrentPtr current,
+                                        tars::Int32 _ret,
+                                        const vector<tars::Int32> &vEcho) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("tars_ret", _ret);
+      tarsAttr.put("vEcho", vEcho);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else if (current->getRequestVersion() == JSONVERSION) {
+      tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+      _p->value["vEcho"] = tars::JsonOutput::writeJson(vEcho);
+      _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+      vector<char> sJsonResponseBuffer;
+      tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriterVector> _os;
+      _os.write(_ret, 0);
+
+      _os.write(vEcho, 2);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+  virtual tars::Int32 test(tars::TarsCurrentPtr current) = 0;
+  static void async_response_test(tars::TarsCurrentPtr current,
+                                  tars::Int32 _ret) {
+    if (current->getRequestVersion() == TUPVERSION) {
+      UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+      tarsAttr.setVersion(current->getRequestVersion());
+      tarsAttr.put("", _ret);
+      tarsAttr.put("tars_ret", _ret);
+
+      vector<char> sTupResponseBuffer;
+      tarsAttr.encode(sTupResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
+    } else if (current->getRequestVersion() == JSONVERSION) {
+      tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+      _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+      vector<char> sJsonResponseBuffer;
+      tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
+      current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
+    } else {
+      tars::TarsOutputStream<tars::BufferWriterVector> _os;
+      _os.write(_ret, 0);
+
+      current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
+    }
+  }
+
+ public:
+  int onDispatch(tars::TarsCurrentPtr _current,
+                 vector<char> &_sResponseBuffer) {
+    static ::std::string __TarsTest__TypeDemo_all[] = {
+        "echoBool",      "echoByte",  "echoInt",    "echoLong",   "echoMap",
+        "echoMultiType", "echoShort", "echoString", "echoVector", "test"};
+
+    pair<string *, string *> r =
+        equal_range(__TarsTest__TypeDemo_all, __TarsTest__TypeDemo_all + 10,
+                    _current->getFuncName());
+    if (r.first == r.second) return tars::TARSSERVERNOFUNCERR;
+    switch (r.first - __TarsTest__TypeDemo_all) {
+      case 0: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        tars::Bool bInput = false;
+        tars::Bool bEcho = false;
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+          tarsAttr.get("bInput", bInput);
+          tarsAttr.getByDefault("bEcho", bEcho, bEcho);
+        } else if (_current->getRequestVersion() == JSONVERSION) {
+          tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(
+              tars::TC_Json::getValue(_current->getRequestBuffer()));
+          tars::JsonInput::readJson(bInput, _jsonPtr->value["bInput"], true);
+          tars::JsonInput::readJson(bEcho, _jsonPtr->value["bEcho"], false);
+        } else {
+          _is.read(bInput, 1, true);
+          _is.read(bEcho, 2, false);
+        }
+        tars::Int32 _ret = echoBool(bInput, bEcho, _current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("tars_ret", _ret);
+            tarsAttr.put("bEcho", bEcho);
+            tarsAttr.encode(_sResponseBuffer);
+          } else if (_current->getRequestVersion() == JSONVERSION) {
+            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+            _p->value["bEcho"] = tars::JsonOutput::writeJson(bEcho);
+            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+            tars::TC_Json::writeValue(_p, _sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(bInput, 1);
+            _os.write(_ret, 0);
             _os.write(bEcho, 2);
-            std::map<string, string> _mStatus;
-            shared_ptr<tars::ResponsePacket> rep = tars_invoke(tars::TARSNORMAL,"echoBool", _os, context, _mStatus);
-            if(pResponseContext)
-            {
-                pResponseContext->swap(rep->context);
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep->sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            _is.read(bEcho, 2, true);
-            return _ret;
+            _os.swap(_sResponseBuffer);
+          }
         }
-
-        void async_echoBool(TypeDemoPrxCallbackPtr callback,tars::Bool bInput,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(bInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoBool", _os, context, _mStatus, callback);
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 1: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        tars::Char bInput;
+        tars::Char bEcho;
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+          tarsAttr.get("bInput", bInput);
+          tarsAttr.getByDefault("bEcho", bEcho, bEcho);
+        } else if (_current->getRequestVersion() == JSONVERSION) {
+          tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(
+              tars::TC_Json::getValue(_current->getRequestBuffer()));
+          tars::JsonInput::readJson(bInput, _jsonPtr->value["bInput"], true);
+          tars::JsonInput::readJson(bEcho, _jsonPtr->value["bEcho"], false);
+        } else {
+          _is.read(bInput, 1, true);
+          _is.read(bEcho, 2, false);
         }
-        
-        void coro_echoBool(TypeDemoCoroPrxCallbackPtr callback,tars::Bool bInput,const map<string, string>& context = TARS_CONTEXT())
-        {
+        tars::Int32 _ret = echoByte(bInput, bEcho, _current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("tars_ret", _ret);
+            tarsAttr.put("bEcho", bEcho);
+            tarsAttr.encode(_sResponseBuffer);
+          } else if (_current->getRequestVersion() == JSONVERSION) {
+            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+            _p->value["bEcho"] = tars::JsonOutput::writeJson(bEcho);
+            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+            tars::TC_Json::writeValue(_p, _sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(bInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoBool", _os, context, _mStatus, callback, true);
-        }
-
-        tars::Int32 echoByte(tars::Char bInput,tars::Char &bEcho,const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(bInput, 1);
+            _os.write(_ret, 0);
             _os.write(bEcho, 2);
-            std::map<string, string> _mStatus;
-            shared_ptr<tars::ResponsePacket> rep = tars_invoke(tars::TARSNORMAL,"echoByte", _os, context, _mStatus);
-            if(pResponseContext)
-            {
-                pResponseContext->swap(rep->context);
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep->sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            _is.read(bEcho, 2, true);
-            return _ret;
+            _os.swap(_sResponseBuffer);
+          }
         }
-
-        void async_echoByte(TypeDemoPrxCallbackPtr callback,tars::Char bInput,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(bInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoByte", _os, context, _mStatus, callback);
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 2: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        tars::Int32 iInput;
+        tars::Int32 iEcho;
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+          tarsAttr.get("iInput", iInput);
+          tarsAttr.getByDefault("iEcho", iEcho, iEcho);
+        } else if (_current->getRequestVersion() == JSONVERSION) {
+          tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(
+              tars::TC_Json::getValue(_current->getRequestBuffer()));
+          tars::JsonInput::readJson(iInput, _jsonPtr->value["iInput"], true);
+          tars::JsonInput::readJson(iEcho, _jsonPtr->value["iEcho"], false);
+        } else {
+          _is.read(iInput, 1, true);
+          _is.read(iEcho, 2, false);
         }
-        
-        void coro_echoByte(TypeDemoCoroPrxCallbackPtr callback,tars::Char bInput,const map<string, string>& context = TARS_CONTEXT())
-        {
+        tars::Int32 _ret = echoInt(iInput, iEcho, _current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("tars_ret", _ret);
+            tarsAttr.put("iEcho", iEcho);
+            tarsAttr.encode(_sResponseBuffer);
+          } else if (_current->getRequestVersion() == JSONVERSION) {
+            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+            _p->value["iEcho"] = tars::JsonOutput::writeJson(iEcho);
+            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+            tars::TC_Json::writeValue(_p, _sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(bInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoByte", _os, context, _mStatus, callback, true);
-        }
-
-        tars::Int32 echoInt(tars::Int32 iInput,tars::Int32 &iEcho,const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(iInput, 1);
+            _os.write(_ret, 0);
             _os.write(iEcho, 2);
-            std::map<string, string> _mStatus;
-            shared_ptr<tars::ResponsePacket> rep = tars_invoke(tars::TARSNORMAL,"echoInt", _os, context, _mStatus);
-            if(pResponseContext)
-            {
-                pResponseContext->swap(rep->context);
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep->sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            _is.read(iEcho, 2, true);
-            return _ret;
+            _os.swap(_sResponseBuffer);
+          }
         }
-
-        void async_echoInt(TypeDemoPrxCallbackPtr callback,tars::Int32 iInput,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(iInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoInt", _os, context, _mStatus, callback);
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 3: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        tars::Int64 lInput;
+        tars::Int64 lEcho;
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+          tarsAttr.get("lInput", lInput);
+          tarsAttr.getByDefault("lEcho", lEcho, lEcho);
+        } else if (_current->getRequestVersion() == JSONVERSION) {
+          tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(
+              tars::TC_Json::getValue(_current->getRequestBuffer()));
+          tars::JsonInput::readJson(lInput, _jsonPtr->value["lInput"], true);
+          tars::JsonInput::readJson(lEcho, _jsonPtr->value["lEcho"], false);
+        } else {
+          _is.read(lInput, 1, true);
+          _is.read(lEcho, 2, false);
         }
-        
-        void coro_echoInt(TypeDemoCoroPrxCallbackPtr callback,tars::Int32 iInput,const map<string, string>& context = TARS_CONTEXT())
-        {
+        tars::Int32 _ret = echoLong(lInput, lEcho, _current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("tars_ret", _ret);
+            tarsAttr.put("lEcho", lEcho);
+            tarsAttr.encode(_sResponseBuffer);
+          } else if (_current->getRequestVersion() == JSONVERSION) {
+            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+            _p->value["lEcho"] = tars::JsonOutput::writeJson(lEcho);
+            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+            tars::TC_Json::writeValue(_p, _sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(iInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoInt", _os, context, _mStatus, callback, true);
-        }
-
-        tars::Int32 echoLong(tars::Int64 lInput,tars::Int64 &lEcho,const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(lInput, 1);
+            _os.write(_ret, 0);
             _os.write(lEcho, 2);
-            std::map<string, string> _mStatus;
-            shared_ptr<tars::ResponsePacket> rep = tars_invoke(tars::TARSNORMAL,"echoLong", _os, context, _mStatus);
-            if(pResponseContext)
-            {
-                pResponseContext->swap(rep->context);
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep->sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            _is.read(lEcho, 2, true);
-            return _ret;
+            _os.swap(_sResponseBuffer);
+          }
         }
-
-        void async_echoLong(TypeDemoPrxCallbackPtr callback,tars::Int64 lInput,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(lInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoLong", _os, context, _mStatus, callback);
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 4: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        map<tars::Int32, std::string> mInput;
+        map<tars::Int32, std::string> mEcho;
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+          tarsAttr.get("mInput", mInput);
+          tarsAttr.getByDefault("mEcho", mEcho, mEcho);
+        } else if (_current->getRequestVersion() == JSONVERSION) {
+          tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(
+              tars::TC_Json::getValue(_current->getRequestBuffer()));
+          tars::JsonInput::readJson(mInput, _jsonPtr->value["mInput"], true);
+          tars::JsonInput::readJson(mEcho, _jsonPtr->value["mEcho"], false);
+        } else {
+          _is.read(mInput, 1, true);
+          _is.read(mEcho, 2, false);
         }
-        
-        void coro_echoLong(TypeDemoCoroPrxCallbackPtr callback,tars::Int64 lInput,const map<string, string>& context = TARS_CONTEXT())
-        {
+        tars::Int32 _ret = echoMap(mInput, mEcho, _current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("tars_ret", _ret);
+            tarsAttr.put("mEcho", mEcho);
+            tarsAttr.encode(_sResponseBuffer);
+          } else if (_current->getRequestVersion() == JSONVERSION) {
+            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+            _p->value["mEcho"] = tars::JsonOutput::writeJson(mEcho);
+            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+            tars::TC_Json::writeValue(_p, _sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(lInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoLong", _os, context, _mStatus, callback, true);
-        }
-
-        tars::Int32 echoMap(const map<tars::Int32, std::string> & mInput,map<tars::Int32, std::string> &mEcho,const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(mInput, 1);
+            _os.write(_ret, 0);
             _os.write(mEcho, 2);
-            std::map<string, string> _mStatus;
-            shared_ptr<tars::ResponsePacket> rep = tars_invoke(tars::TARSNORMAL,"echoMap", _os, context, _mStatus);
-            if(pResponseContext)
-            {
-                pResponseContext->swap(rep->context);
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep->sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            _is.read(mEcho, 2, true);
-            return _ret;
+            _os.swap(_sResponseBuffer);
+          }
         }
-
-        void async_echoMap(TypeDemoPrxCallbackPtr callback,const map<tars::Int32, std::string> &mInput,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(mInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoMap", _os, context, _mStatus, callback);
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 5: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        vector<map<tars::Int32, std::string> > mtInput;
+        vector<map<tars::Int32, std::string> > mtEcho;
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+          tarsAttr.get("mtInput", mtInput);
+          tarsAttr.getByDefault("mtEcho", mtEcho, mtEcho);
+        } else if (_current->getRequestVersion() == JSONVERSION) {
+          tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(
+              tars::TC_Json::getValue(_current->getRequestBuffer()));
+          tars::JsonInput::readJson(mtInput, _jsonPtr->value["mtInput"], true);
+          tars::JsonInput::readJson(mtEcho, _jsonPtr->value["mtEcho"], false);
+        } else {
+          _is.read(mtInput, 1, true);
+          _is.read(mtEcho, 2, false);
         }
-        
-        void coro_echoMap(TypeDemoCoroPrxCallbackPtr callback,const map<tars::Int32, std::string> &mInput,const map<string, string>& context = TARS_CONTEXT())
-        {
+        tars::Int32 _ret = echoMultiType(mtInput, mtEcho, _current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("tars_ret", _ret);
+            tarsAttr.put("mtEcho", mtEcho);
+            tarsAttr.encode(_sResponseBuffer);
+          } else if (_current->getRequestVersion() == JSONVERSION) {
+            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+            _p->value["mtEcho"] = tars::JsonOutput::writeJson(mtEcho);
+            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+            tars::TC_Json::writeValue(_p, _sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(mInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoMap", _os, context, _mStatus, callback, true);
-        }
-
-        tars::Int32 echoMultiType(const vector<map<tars::Int32, std::string> > & mtInput,vector<map<tars::Int32, std::string> > &mtEcho,const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(mtInput, 1);
+            _os.write(_ret, 0);
             _os.write(mtEcho, 2);
-            std::map<string, string> _mStatus;
-            shared_ptr<tars::ResponsePacket> rep = tars_invoke(tars::TARSNORMAL,"echoMultiType", _os, context, _mStatus);
-            if(pResponseContext)
-            {
-                pResponseContext->swap(rep->context);
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep->sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            _is.read(mtEcho, 2, true);
-            return _ret;
+            _os.swap(_sResponseBuffer);
+          }
         }
-
-        void async_echoMultiType(TypeDemoPrxCallbackPtr callback,const vector<map<tars::Int32, std::string> > &mtInput,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(mtInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoMultiType", _os, context, _mStatus, callback);
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 6: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        tars::Short sInput;
+        tars::Short sEcho;
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+          tarsAttr.get("sInput", sInput);
+          tarsAttr.getByDefault("sEcho", sEcho, sEcho);
+        } else if (_current->getRequestVersion() == JSONVERSION) {
+          tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(
+              tars::TC_Json::getValue(_current->getRequestBuffer()));
+          tars::JsonInput::readJson(sInput, _jsonPtr->value["sInput"], true);
+          tars::JsonInput::readJson(sEcho, _jsonPtr->value["sEcho"], false);
+        } else {
+          _is.read(sInput, 1, true);
+          _is.read(sEcho, 2, false);
         }
-        
-        void coro_echoMultiType(TypeDemoCoroPrxCallbackPtr callback,const vector<map<tars::Int32, std::string> > &mtInput,const map<string, string>& context = TARS_CONTEXT())
-        {
+        tars::Int32 _ret = echoShort(sInput, sEcho, _current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("tars_ret", _ret);
+            tarsAttr.put("sEcho", sEcho);
+            tarsAttr.encode(_sResponseBuffer);
+          } else if (_current->getRequestVersion() == JSONVERSION) {
+            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+            _p->value["sEcho"] = tars::JsonOutput::writeJson(sEcho);
+            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+            tars::TC_Json::writeValue(_p, _sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(mtInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoMultiType", _os, context, _mStatus, callback, true);
-        }
-
-        tars::Int32 echoShort(tars::Short sInput,tars::Short &sEcho,const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(sInput, 1);
+            _os.write(_ret, 0);
             _os.write(sEcho, 2);
-            std::map<string, string> _mStatus;
-            shared_ptr<tars::ResponsePacket> rep = tars_invoke(tars::TARSNORMAL,"echoShort", _os, context, _mStatus);
-            if(pResponseContext)
-            {
-                pResponseContext->swap(rep->context);
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep->sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            _is.read(sEcho, 2, true);
-            return _ret;
+            _os.swap(_sResponseBuffer);
+          }
         }
-
-        void async_echoShort(TypeDemoPrxCallbackPtr callback,tars::Short sInput,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(sInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoShort", _os, context, _mStatus, callback);
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 7: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        std::string strInput;
+        std::string strEcho;
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+          tarsAttr.get("strInput", strInput);
+          tarsAttr.getByDefault("strEcho", strEcho, strEcho);
+        } else if (_current->getRequestVersion() == JSONVERSION) {
+          tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(
+              tars::TC_Json::getValue(_current->getRequestBuffer()));
+          tars::JsonInput::readJson(strInput, _jsonPtr->value["strInput"],
+                                    true);
+          tars::JsonInput::readJson(strEcho, _jsonPtr->value["strEcho"], false);
+        } else {
+          _is.read(strInput, 1, true);
+          _is.read(strEcho, 2, false);
         }
-        
-        void coro_echoShort(TypeDemoCoroPrxCallbackPtr callback,tars::Short sInput,const map<string, string>& context = TARS_CONTEXT())
-        {
+        tars::Int32 _ret = echoString(strInput, strEcho, _current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("tars_ret", _ret);
+            tarsAttr.put("strEcho", strEcho);
+            tarsAttr.encode(_sResponseBuffer);
+          } else if (_current->getRequestVersion() == JSONVERSION) {
+            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+            _p->value["strEcho"] = tars::JsonOutput::writeJson(strEcho);
+            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+            tars::TC_Json::writeValue(_p, _sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(sInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoShort", _os, context, _mStatus, callback, true);
-        }
-
-        tars::Int32 echoString(const std::string & strInput,std::string &strEcho,const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(strInput, 1);
+            _os.write(_ret, 0);
             _os.write(strEcho, 2);
-            std::map<string, string> _mStatus;
-            shared_ptr<tars::ResponsePacket> rep = tars_invoke(tars::TARSNORMAL,"echoString", _os, context, _mStatus);
-            if(pResponseContext)
-            {
-                pResponseContext->swap(rep->context);
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep->sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            _is.read(strEcho, 2, true);
-            return _ret;
+            _os.swap(_sResponseBuffer);
+          }
         }
-
-        void async_echoString(TypeDemoPrxCallbackPtr callback,const std::string &strInput,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(strInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoString", _os, context, _mStatus, callback);
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 8: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        vector<tars::Int32> vInput;
+        vector<tars::Int32> vEcho;
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+          tarsAttr.get("vInput", vInput);
+          tarsAttr.getByDefault("vEcho", vEcho, vEcho);
+        } else if (_current->getRequestVersion() == JSONVERSION) {
+          tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(
+              tars::TC_Json::getValue(_current->getRequestBuffer()));
+          tars::JsonInput::readJson(vInput, _jsonPtr->value["vInput"], true);
+          tars::JsonInput::readJson(vEcho, _jsonPtr->value["vEcho"], false);
+        } else {
+          _is.read(vInput, 1, true);
+          _is.read(vEcho, 2, false);
         }
-        
-        void coro_echoString(TypeDemoCoroPrxCallbackPtr callback,const std::string &strInput,const map<string, string>& context = TARS_CONTEXT())
-        {
+        tars::Int32 _ret = echoVector(vInput, vEcho, _current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("tars_ret", _ret);
+            tarsAttr.put("vEcho", vEcho);
+            tarsAttr.encode(_sResponseBuffer);
+          } else if (_current->getRequestVersion() == JSONVERSION) {
+            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+            _p->value["vEcho"] = tars::JsonOutput::writeJson(vEcho);
+            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+            tars::TC_Json::writeValue(_p, _sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(strInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoString", _os, context, _mStatus, callback, true);
-        }
-
-        tars::Int32 echoVector(const vector<tars::Int32> & vInput,vector<tars::Int32> &vEcho,const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(vInput, 1);
+            _os.write(_ret, 0);
             _os.write(vEcho, 2);
-            std::map<string, string> _mStatus;
-            shared_ptr<tars::ResponsePacket> rep = tars_invoke(tars::TARSNORMAL,"echoVector", _os, context, _mStatus);
-            if(pResponseContext)
-            {
-                pResponseContext->swap(rep->context);
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep->sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            _is.read(vEcho, 2, true);
-            return _ret;
+            _os.swap(_sResponseBuffer);
+          }
         }
-
-        void async_echoVector(TypeDemoPrxCallbackPtr callback,const vector<tars::Int32> &vInput,const map<string, string>& context = TARS_CONTEXT())
-        {
+        return tars::TARSSERVERSUCCESS;
+      }
+      case 9: {
+        tars::TarsInputStream<tars::BufferReader> _is;
+        _is.setBuffer(_current->getRequestBuffer());
+        if (_current->getRequestVersion() == TUPVERSION) {
+          UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+          tarsAttr.setVersion(_current->getRequestVersion());
+          tarsAttr.decode(_current->getRequestBuffer());
+        } else if (_current->getRequestVersion() == JSONVERSION) {
+          tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(
+              tars::TC_Json::getValue(_current->getRequestBuffer()));
+        } else {
+        }
+        tars::Int32 _ret = test(_current);
+        if (_current->isResponse()) {
+          if (_current->getRequestVersion() == TUPVERSION) {
+            UniAttribute<tars::BufferWriterVector, tars::BufferReader> tarsAttr;
+            tarsAttr.setVersion(_current->getRequestVersion());
+            tarsAttr.put("", _ret);
+            tarsAttr.put("tars_ret", _ret);
+            tarsAttr.encode(_sResponseBuffer);
+          } else if (_current->getRequestVersion() == JSONVERSION) {
+            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
+            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
+            tars::TC_Json::writeValue(_p, _sResponseBuffer);
+          } else {
             tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(vInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoVector", _os, context, _mStatus, callback);
+            _os.write(_ret, 0);
+            _os.swap(_sResponseBuffer);
+          }
         }
-        
-        void coro_echoVector(TypeDemoCoroPrxCallbackPtr callback,const vector<tars::Int32> &vInput,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            _os.write(vInput, 1);
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"echoVector", _os, context, _mStatus, callback, true);
-        }
+        return tars::TARSSERVERSUCCESS;
+      }
+    }
+    return tars::TARSSERVERNOFUNCERR;
+  }
+};
 
-        tars::Int32 test(const map<string, string> &context = TARS_CONTEXT(),map<string, string> * pResponseContext = NULL)
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            std::map<string, string> _mStatus;
-            shared_ptr<tars::ResponsePacket> rep = tars_invoke(tars::TARSNORMAL,"test", _os, context, _mStatus);
-            if(pResponseContext)
-            {
-                pResponseContext->swap(rep->context);
-            }
-
-            tars::TarsInputStream<tars::BufferReader> _is;
-            _is.setBuffer(rep->sBuffer);
-            tars::Int32 _ret;
-            _is.read(_ret, 0, true);
-            return _ret;
-        }
-
-        void async_test(TypeDemoPrxCallbackPtr callback,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"test", _os, context, _mStatus, callback);
-        }
-        
-        void coro_test(TypeDemoCoroPrxCallbackPtr callback,const map<string, string>& context = TARS_CONTEXT())
-        {
-            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-            std::map<string, string> _mStatus;
-            tars_invoke_async(tars::TARSNORMAL,"test", _os, context, _mStatus, callback, true);
-        }
-
-        TypeDemoProxy* tars_hash(int64_t key)
-        {
-            return (TypeDemoProxy*)ServantProxy::tars_hash(key);
-        }
-
-        TypeDemoProxy* tars_consistent_hash(int64_t key)
-        {
-            return (TypeDemoProxy*)ServantProxy::tars_consistent_hash(key);
-        }
-
-        TypeDemoProxy* tars_set_timeout(int msecond)
-        {
-            return (TypeDemoProxy*)ServantProxy::tars_set_timeout(msecond);
-        }
-
-        static const char* tars_prxname() { return "TypeDemoProxy"; }
-    };
-    typedef tars::TC_AutoPtr<TypeDemoProxy> TypeDemoPrx;
-
-    /* servant for server */
-    class TypeDemo : public tars::Servant
-    {
-    public:
-        virtual ~TypeDemo(){}
-        virtual tars::Int32 echoBool(tars::Bool bInput,tars::Bool &bEcho,tars::TarsCurrentPtr current) = 0;
-        static void async_response_echoBool(tars::TarsCurrentPtr current, tars::Int32 _ret, tars::Bool bEcho)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("tars_ret", _ret);
-                tarsAttr.put("bEcho", bEcho);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else if (current->getRequestVersion() == JSONVERSION)
-            {
-                tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                _p->value["bEcho"] = tars::JsonOutput::writeJson(bEcho);
-                _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                vector<char> sJsonResponseBuffer;
-                tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                _os.write(_ret, 0);
-
-                _os.write(bEcho, 2);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-        virtual tars::Int32 echoByte(tars::Char bInput,tars::Char &bEcho,tars::TarsCurrentPtr current) = 0;
-        static void async_response_echoByte(tars::TarsCurrentPtr current, tars::Int32 _ret, tars::Char bEcho)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("tars_ret", _ret);
-                tarsAttr.put("bEcho", bEcho);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else if (current->getRequestVersion() == JSONVERSION)
-            {
-                tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                _p->value["bEcho"] = tars::JsonOutput::writeJson(bEcho);
-                _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                vector<char> sJsonResponseBuffer;
-                tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                _os.write(_ret, 0);
-
-                _os.write(bEcho, 2);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-        virtual tars::Int32 echoInt(tars::Int32 iInput,tars::Int32 &iEcho,tars::TarsCurrentPtr current) = 0;
-        static void async_response_echoInt(tars::TarsCurrentPtr current, tars::Int32 _ret, tars::Int32 iEcho)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("tars_ret", _ret);
-                tarsAttr.put("iEcho", iEcho);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else if (current->getRequestVersion() == JSONVERSION)
-            {
-                tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                _p->value["iEcho"] = tars::JsonOutput::writeJson(iEcho);
-                _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                vector<char> sJsonResponseBuffer;
-                tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                _os.write(_ret, 0);
-
-                _os.write(iEcho, 2);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-        virtual tars::Int32 echoLong(tars::Int64 lInput,tars::Int64 &lEcho,tars::TarsCurrentPtr current) = 0;
-        static void async_response_echoLong(tars::TarsCurrentPtr current, tars::Int32 _ret, tars::Int64 lEcho)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("tars_ret", _ret);
-                tarsAttr.put("lEcho", lEcho);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else if (current->getRequestVersion() == JSONVERSION)
-            {
-                tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                _p->value["lEcho"] = tars::JsonOutput::writeJson(lEcho);
-                _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                vector<char> sJsonResponseBuffer;
-                tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                _os.write(_ret, 0);
-
-                _os.write(lEcho, 2);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-        virtual tars::Int32 echoMap(const map<tars::Int32, std::string> & mInput,map<tars::Int32, std::string> &mEcho,tars::TarsCurrentPtr current) = 0;
-        static void async_response_echoMap(tars::TarsCurrentPtr current, tars::Int32 _ret, const map<tars::Int32, std::string> &mEcho)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("tars_ret", _ret);
-                tarsAttr.put("mEcho", mEcho);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else if (current->getRequestVersion() == JSONVERSION)
-            {
-                tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                _p->value["mEcho"] = tars::JsonOutput::writeJson(mEcho);
-                _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                vector<char> sJsonResponseBuffer;
-                tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                _os.write(_ret, 0);
-
-                _os.write(mEcho, 2);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-        virtual tars::Int32 echoMultiType(const vector<map<tars::Int32, std::string> > & mtInput,vector<map<tars::Int32, std::string> > &mtEcho,tars::TarsCurrentPtr current) = 0;
-        static void async_response_echoMultiType(tars::TarsCurrentPtr current, tars::Int32 _ret, const vector<map<tars::Int32, std::string> > &mtEcho)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("tars_ret", _ret);
-                tarsAttr.put("mtEcho", mtEcho);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else if (current->getRequestVersion() == JSONVERSION)
-            {
-                tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                _p->value["mtEcho"] = tars::JsonOutput::writeJson(mtEcho);
-                _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                vector<char> sJsonResponseBuffer;
-                tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                _os.write(_ret, 0);
-
-                _os.write(mtEcho, 2);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-        virtual tars::Int32 echoShort(tars::Short sInput,tars::Short &sEcho,tars::TarsCurrentPtr current) = 0;
-        static void async_response_echoShort(tars::TarsCurrentPtr current, tars::Int32 _ret, tars::Short sEcho)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("tars_ret", _ret);
-                tarsAttr.put("sEcho", sEcho);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else if (current->getRequestVersion() == JSONVERSION)
-            {
-                tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                _p->value["sEcho"] = tars::JsonOutput::writeJson(sEcho);
-                _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                vector<char> sJsonResponseBuffer;
-                tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                _os.write(_ret, 0);
-
-                _os.write(sEcho, 2);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-        virtual tars::Int32 echoString(const std::string & strInput,std::string &strEcho,tars::TarsCurrentPtr current) = 0;
-        static void async_response_echoString(tars::TarsCurrentPtr current, tars::Int32 _ret, const std::string &strEcho)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("tars_ret", _ret);
-                tarsAttr.put("strEcho", strEcho);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else if (current->getRequestVersion() == JSONVERSION)
-            {
-                tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                _p->value["strEcho"] = tars::JsonOutput::writeJson(strEcho);
-                _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                vector<char> sJsonResponseBuffer;
-                tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                _os.write(_ret, 0);
-
-                _os.write(strEcho, 2);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-        virtual tars::Int32 echoVector(const vector<tars::Int32> & vInput,vector<tars::Int32> &vEcho,tars::TarsCurrentPtr current) = 0;
-        static void async_response_echoVector(tars::TarsCurrentPtr current, tars::Int32 _ret, const vector<tars::Int32> &vEcho)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("tars_ret", _ret);
-                tarsAttr.put("vEcho", vEcho);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else if (current->getRequestVersion() == JSONVERSION)
-            {
-                tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                _p->value["vEcho"] = tars::JsonOutput::writeJson(vEcho);
-                _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                vector<char> sJsonResponseBuffer;
-                tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                _os.write(_ret, 0);
-
-                _os.write(vEcho, 2);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-        virtual tars::Int32 test(tars::TarsCurrentPtr current) = 0;
-        static void async_response_test(tars::TarsCurrentPtr current, tars::Int32 _ret)
-        {
-            if (current->getRequestVersion() == TUPVERSION )
-            {
-                UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                tarsAttr.setVersion(current->getRequestVersion());
-                tarsAttr.put("", _ret);
-                tarsAttr.put("tars_ret", _ret);
-
-                vector<char> sTupResponseBuffer;
-                tarsAttr.encode(sTupResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sTupResponseBuffer);
-            }
-            else if (current->getRequestVersion() == JSONVERSION)
-            {
-                tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                vector<char> sJsonResponseBuffer;
-                tars::TC_Json::writeValue(_p, sJsonResponseBuffer);
-                current->sendResponse(tars::TARSSERVERSUCCESS, sJsonResponseBuffer);
-            }
-            else
-            {
-                tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                _os.write(_ret, 0);
-
-                current->sendResponse(tars::TARSSERVERSUCCESS, _os.getByteBuffer());
-            }
-        }
-
-    public:
-        int onDispatch(tars::TarsCurrentPtr _current, vector<char> &_sResponseBuffer)
-        {
-            static ::std::string __TarsTest__TypeDemo_all[]=
-            {
-                "echoBool",
-                "echoByte",
-                "echoInt",
-                "echoLong",
-                "echoMap",
-                "echoMultiType",
-                "echoShort",
-                "echoString",
-                "echoVector",
-                "test"
-            };
-
-            pair<string*, string*> r = equal_range(__TarsTest__TypeDemo_all, __TarsTest__TypeDemo_all+10, _current->getFuncName());
-            if(r.first == r.second) return tars::TARSSERVERNOFUNCERR;
-            switch(r.first - __TarsTest__TypeDemo_all)
-            {
-                case 0:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    tars::Bool bInput = false;
-                    tars::Bool bEcho = false;
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                        tarsAttr.get("bInput", bInput);
-                        tarsAttr.getByDefault("bEcho", bEcho, bEcho);
-                    }
-                    else if (_current->getRequestVersion() == JSONVERSION)
-                    {
-                        tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(tars::TC_Json::getValue(_current->getRequestBuffer()));
-                        tars::JsonInput::readJson(bInput, _jsonPtr->value["bInput"], true);
-                        tars::JsonInput::readJson(bEcho, _jsonPtr->value["bEcho"], false);
-                    }
-                    else
-                    {
-                        _is.read(bInput, 1, true);
-                        _is.read(bEcho, 2, false);
-                    }
-                    tars::Int32 _ret = echoBool(bInput,bEcho, _current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION)
-                        {
-                            UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("tars_ret", _ret);
-                            tarsAttr.put("bEcho", bEcho);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else if (_current->getRequestVersion() == JSONVERSION)
-                        {
-                            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                            _p->value["bEcho"] = tars::JsonOutput::writeJson(bEcho);
-                            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                            tars::TC_Json::writeValue(_p, _sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                            _os.write(_ret, 0);
-                            _os.write(bEcho, 2);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 1:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    tars::Char bInput;
-                    tars::Char bEcho;
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                        tarsAttr.get("bInput", bInput);
-                        tarsAttr.getByDefault("bEcho", bEcho, bEcho);
-                    }
-                    else if (_current->getRequestVersion() == JSONVERSION)
-                    {
-                        tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(tars::TC_Json::getValue(_current->getRequestBuffer()));
-                        tars::JsonInput::readJson(bInput, _jsonPtr->value["bInput"], true);
-                        tars::JsonInput::readJson(bEcho, _jsonPtr->value["bEcho"], false);
-                    }
-                    else
-                    {
-                        _is.read(bInput, 1, true);
-                        _is.read(bEcho, 2, false);
-                    }
-                    tars::Int32 _ret = echoByte(bInput,bEcho, _current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION)
-                        {
-                            UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("tars_ret", _ret);
-                            tarsAttr.put("bEcho", bEcho);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else if (_current->getRequestVersion() == JSONVERSION)
-                        {
-                            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                            _p->value["bEcho"] = tars::JsonOutput::writeJson(bEcho);
-                            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                            tars::TC_Json::writeValue(_p, _sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                            _os.write(_ret, 0);
-                            _os.write(bEcho, 2);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 2:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    tars::Int32 iInput;
-                    tars::Int32 iEcho;
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                        tarsAttr.get("iInput", iInput);
-                        tarsAttr.getByDefault("iEcho", iEcho, iEcho);
-                    }
-                    else if (_current->getRequestVersion() == JSONVERSION)
-                    {
-                        tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(tars::TC_Json::getValue(_current->getRequestBuffer()));
-                        tars::JsonInput::readJson(iInput, _jsonPtr->value["iInput"], true);
-                        tars::JsonInput::readJson(iEcho, _jsonPtr->value["iEcho"], false);
-                    }
-                    else
-                    {
-                        _is.read(iInput, 1, true);
-                        _is.read(iEcho, 2, false);
-                    }
-                    tars::Int32 _ret = echoInt(iInput,iEcho, _current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION)
-                        {
-                            UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("tars_ret", _ret);
-                            tarsAttr.put("iEcho", iEcho);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else if (_current->getRequestVersion() == JSONVERSION)
-                        {
-                            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                            _p->value["iEcho"] = tars::JsonOutput::writeJson(iEcho);
-                            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                            tars::TC_Json::writeValue(_p, _sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                            _os.write(_ret, 0);
-                            _os.write(iEcho, 2);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 3:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    tars::Int64 lInput;
-                    tars::Int64 lEcho;
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                        tarsAttr.get("lInput", lInput);
-                        tarsAttr.getByDefault("lEcho", lEcho, lEcho);
-                    }
-                    else if (_current->getRequestVersion() == JSONVERSION)
-                    {
-                        tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(tars::TC_Json::getValue(_current->getRequestBuffer()));
-                        tars::JsonInput::readJson(lInput, _jsonPtr->value["lInput"], true);
-                        tars::JsonInput::readJson(lEcho, _jsonPtr->value["lEcho"], false);
-                    }
-                    else
-                    {
-                        _is.read(lInput, 1, true);
-                        _is.read(lEcho, 2, false);
-                    }
-                    tars::Int32 _ret = echoLong(lInput,lEcho, _current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION)
-                        {
-                            UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("tars_ret", _ret);
-                            tarsAttr.put("lEcho", lEcho);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else if (_current->getRequestVersion() == JSONVERSION)
-                        {
-                            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                            _p->value["lEcho"] = tars::JsonOutput::writeJson(lEcho);
-                            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                            tars::TC_Json::writeValue(_p, _sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                            _os.write(_ret, 0);
-                            _os.write(lEcho, 2);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 4:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    map<tars::Int32, std::string> mInput;
-                    map<tars::Int32, std::string> mEcho;
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                        tarsAttr.get("mInput", mInput);
-                        tarsAttr.getByDefault("mEcho", mEcho, mEcho);
-                    }
-                    else if (_current->getRequestVersion() == JSONVERSION)
-                    {
-                        tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(tars::TC_Json::getValue(_current->getRequestBuffer()));
-                        tars::JsonInput::readJson(mInput, _jsonPtr->value["mInput"], true);
-                        tars::JsonInput::readJson(mEcho, _jsonPtr->value["mEcho"], false);
-                    }
-                    else
-                    {
-                        _is.read(mInput, 1, true);
-                        _is.read(mEcho, 2, false);
-                    }
-                    tars::Int32 _ret = echoMap(mInput,mEcho, _current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION)
-                        {
-                            UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("tars_ret", _ret);
-                            tarsAttr.put("mEcho", mEcho);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else if (_current->getRequestVersion() == JSONVERSION)
-                        {
-                            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                            _p->value["mEcho"] = tars::JsonOutput::writeJson(mEcho);
-                            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                            tars::TC_Json::writeValue(_p, _sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                            _os.write(_ret, 0);
-                            _os.write(mEcho, 2);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 5:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    vector<map<tars::Int32, std::string> > mtInput;
-                    vector<map<tars::Int32, std::string> > mtEcho;
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                        tarsAttr.get("mtInput", mtInput);
-                        tarsAttr.getByDefault("mtEcho", mtEcho, mtEcho);
-                    }
-                    else if (_current->getRequestVersion() == JSONVERSION)
-                    {
-                        tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(tars::TC_Json::getValue(_current->getRequestBuffer()));
-                        tars::JsonInput::readJson(mtInput, _jsonPtr->value["mtInput"], true);
-                        tars::JsonInput::readJson(mtEcho, _jsonPtr->value["mtEcho"], false);
-                    }
-                    else
-                    {
-                        _is.read(mtInput, 1, true);
-                        _is.read(mtEcho, 2, false);
-                    }
-                    tars::Int32 _ret = echoMultiType(mtInput,mtEcho, _current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION)
-                        {
-                            UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("tars_ret", _ret);
-                            tarsAttr.put("mtEcho", mtEcho);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else if (_current->getRequestVersion() == JSONVERSION)
-                        {
-                            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                            _p->value["mtEcho"] = tars::JsonOutput::writeJson(mtEcho);
-                            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                            tars::TC_Json::writeValue(_p, _sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                            _os.write(_ret, 0);
-                            _os.write(mtEcho, 2);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 6:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    tars::Short sInput;
-                    tars::Short sEcho;
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                        tarsAttr.get("sInput", sInput);
-                        tarsAttr.getByDefault("sEcho", sEcho, sEcho);
-                    }
-                    else if (_current->getRequestVersion() == JSONVERSION)
-                    {
-                        tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(tars::TC_Json::getValue(_current->getRequestBuffer()));
-                        tars::JsonInput::readJson(sInput, _jsonPtr->value["sInput"], true);
-                        tars::JsonInput::readJson(sEcho, _jsonPtr->value["sEcho"], false);
-                    }
-                    else
-                    {
-                        _is.read(sInput, 1, true);
-                        _is.read(sEcho, 2, false);
-                    }
-                    tars::Int32 _ret = echoShort(sInput,sEcho, _current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION)
-                        {
-                            UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("tars_ret", _ret);
-                            tarsAttr.put("sEcho", sEcho);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else if (_current->getRequestVersion() == JSONVERSION)
-                        {
-                            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                            _p->value["sEcho"] = tars::JsonOutput::writeJson(sEcho);
-                            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                            tars::TC_Json::writeValue(_p, _sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                            _os.write(_ret, 0);
-                            _os.write(sEcho, 2);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 7:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    std::string strInput;
-                    std::string strEcho;
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                        tarsAttr.get("strInput", strInput);
-                        tarsAttr.getByDefault("strEcho", strEcho, strEcho);
-                    }
-                    else if (_current->getRequestVersion() == JSONVERSION)
-                    {
-                        tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(tars::TC_Json::getValue(_current->getRequestBuffer()));
-                        tars::JsonInput::readJson(strInput, _jsonPtr->value["strInput"], true);
-                        tars::JsonInput::readJson(strEcho, _jsonPtr->value["strEcho"], false);
-                    }
-                    else
-                    {
-                        _is.read(strInput, 1, true);
-                        _is.read(strEcho, 2, false);
-                    }
-                    tars::Int32 _ret = echoString(strInput,strEcho, _current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION)
-                        {
-                            UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("tars_ret", _ret);
-                            tarsAttr.put("strEcho", strEcho);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else if (_current->getRequestVersion() == JSONVERSION)
-                        {
-                            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                            _p->value["strEcho"] = tars::JsonOutput::writeJson(strEcho);
-                            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                            tars::TC_Json::writeValue(_p, _sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                            _os.write(_ret, 0);
-                            _os.write(strEcho, 2);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 8:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    vector<tars::Int32> vInput;
-                    vector<tars::Int32> vEcho;
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                        tarsAttr.get("vInput", vInput);
-                        tarsAttr.getByDefault("vEcho", vEcho, vEcho);
-                    }
-                    else if (_current->getRequestVersion() == JSONVERSION)
-                    {
-                        tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(tars::TC_Json::getValue(_current->getRequestBuffer()));
-                        tars::JsonInput::readJson(vInput, _jsonPtr->value["vInput"], true);
-                        tars::JsonInput::readJson(vEcho, _jsonPtr->value["vEcho"], false);
-                    }
-                    else
-                    {
-                        _is.read(vInput, 1, true);
-                        _is.read(vEcho, 2, false);
-                    }
-                    tars::Int32 _ret = echoVector(vInput,vEcho, _current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION)
-                        {
-                            UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("tars_ret", _ret);
-                            tarsAttr.put("vEcho", vEcho);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else if (_current->getRequestVersion() == JSONVERSION)
-                        {
-                            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                            _p->value["vEcho"] = tars::JsonOutput::writeJson(vEcho);
-                            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                            tars::TC_Json::writeValue(_p, _sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                            _os.write(_ret, 0);
-                            _os.write(vEcho, 2);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-                case 9:
-                {
-                    tars::TarsInputStream<tars::BufferReader> _is;
-                    _is.setBuffer(_current->getRequestBuffer());
-                    if (_current->getRequestVersion() == TUPVERSION)
-                    {
-                        UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                        tarsAttr.setVersion(_current->getRequestVersion());
-                        tarsAttr.decode(_current->getRequestBuffer());
-                    }
-                    else if (_current->getRequestVersion() == JSONVERSION)
-                    {
-                        tars::JsonValueObjPtr _jsonPtr = tars::JsonValueObjPtr::dynamicCast(tars::TC_Json::getValue(_current->getRequestBuffer()));
-                    }
-                    else
-                    {
-                    }
-                    tars::Int32 _ret = test(_current);
-                    if(_current->isResponse())
-                    {
-                        if (_current->getRequestVersion() == TUPVERSION)
-                        {
-                            UniAttribute<tars::BufferWriterVector, tars::BufferReader>  tarsAttr;
-                            tarsAttr.setVersion(_current->getRequestVersion());
-                            tarsAttr.put("", _ret);
-                            tarsAttr.put("tars_ret", _ret);
-                            tarsAttr.encode(_sResponseBuffer);
-                        }
-                        else if (_current->getRequestVersion() == JSONVERSION)
-                        {
-                            tars::JsonValueObjPtr _p = new tars::JsonValueObj();
-                            _p->value["tars_ret"] = tars::JsonOutput::writeJson(_ret);
-                            tars::TC_Json::writeValue(_p, _sResponseBuffer);
-                        }
-                        else
-                        {
-                            tars::TarsOutputStream<tars::BufferWriterVector> _os;
-                            _os.write(_ret, 0);
-                            _os.swap(_sResponseBuffer);
-                        }
-                    }
-                    return tars::TARSSERVERSUCCESS;
-
-                }
-            }
-            return tars::TARSSERVERNOFUNCERR;
-        }
-    };
-
-
-}
-
-
+}  // namespace TarsTest
 
 #endif

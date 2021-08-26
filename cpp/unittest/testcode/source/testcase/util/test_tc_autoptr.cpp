@@ -1,38 +1,32 @@
-#include "gtest/gtest.h"
-#include "servant/Application.h"
-#include "TarsTest/TestcaseServer/RPCTest.h"
-#include "servant/AdminF.h"
 #include "TarsServantName.h"
-
+#include "TarsTest/TestcaseServer/RPCTest.h"
+#include "gtest/gtest.h"
+#include "servant/AdminF.h"
+#include "servant/Application.h"
 
 #include "util/tc_autoptr.h"
 // #include "util/tc_functor.h"
-#include "util/tc_thread_pool.h"
-#include <vector>
 #include <cassert>
 #include <iostream>
-
+#include <vector>
+#include "util/tc_thread_pool.h"
 
 using namespace std;
 using namespace tars;
 using namespace TarsTest;
 
-
 /// begin test data
 // TC_Atomic a;
 
-class TestPointer : public TC_HandleBase
-{
-public:
-    void func(int &i)
-    {
-        int n = 10000;
-        while(n)
-        {
-            i++;
-            n--;
-        }
+class TestPointer : public TC_HandleBase {
+ public:
+  void func(int &i) {
+    int n = 10000;
+    while (n) {
+      i++;
+      n--;
     }
+  }
 };
 
 // void testAdd()
@@ -51,8 +45,8 @@ public:
 //     {
 //         a.dec();
 //     }
-// }    
-    
+// }
+
 // /// end test data
 
 // // 测试多线程并行读写 TC_Atomic 时的原子性与正确性
@@ -93,36 +87,29 @@ public:
 
 //     EXPECT_EQ(0, a.get());
 
-
 // }
 
-
 // 测试 TC_AutoPtr 的构造函数 TC_AutoPtr(T* p = 0) ？
-TEST(TarsUtilTestcase, UT_TC_AutoPtr)
-{
-    int i = 0;
+TEST(TarsUtilTestcase, UT_TC_AutoPtr) {
+  int i = 0;
 
-    typedef TC_AutoPtr<TestPointer> TestPointerPtr;
-    vector<TestPointerPtr> vtp;
-    for(size_t j = 0; j < 10; j++)
-    {
-        vtp.push_back(new TestPointer());
-    }
+  typedef TC_AutoPtr<TestPointer> TestPointerPtr;
+  vector<TestPointerPtr> vtp;
+  for (size_t j = 0; j < 10; j++) {
+    vtp.push_back(new TestPointer());
+  }
 
-    EXPECT_EQ(0, i);
-    
-    for(size_t j = 0; j < 10; j++)
-    {
-        vtp[j]->func(i);
-    }
-    EXPECT_EQ(10*10000, i);
-    
-    vector<TestPointerPtr> vtp1 = vtp;
-    for(size_t j = 0; j < 10; j++)
-    {
-        vtp[j]->func(i);
-    }
+  EXPECT_EQ(0, i);
 
-    EXPECT_EQ(20*10000, i);
+  for (size_t j = 0; j < 10; j++) {
+    vtp[j]->func(i);
+  }
+  EXPECT_EQ(10 * 10000, i);
+
+  vector<TestPointerPtr> vtp1 = vtp;
+  for (size_t j = 0; j < 10; j++) {
+    vtp[j]->func(i);
+  }
+
+  EXPECT_EQ(20 * 10000, i);
 }
-

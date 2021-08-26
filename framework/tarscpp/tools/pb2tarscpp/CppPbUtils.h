@@ -12,8 +12,6 @@ std::string ProtoFileBaseName(const std::string& fullName);
 extern const std::string kDeclaration;
 extern const std::string kIndent;
 
-std::string LineFeed(int indent = 0) ;
-
+std::string LineFeed(int indent = 0);
 
 std::string ToCppNamespace(const std::string& name);
-

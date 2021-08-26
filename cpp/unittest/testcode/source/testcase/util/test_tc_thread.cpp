@@ -1,9 +1,8 @@
-#include "gtest/gtest.h"
-#include "servant/Application.h"
-#include "TarsTest/TestcaseServer/RPCTest.h"
-#include "servant/AdminF.h"
 #include "TarsServantName.h"
-
+#include "TarsTest/TestcaseServer/RPCTest.h"
+#include "gtest/gtest.h"
+#include "servant/AdminF.h"
+#include "servant/Application.h"
 
 #include "util/tc_thread.h"
 
@@ -14,62 +13,48 @@ using namespace std;
 using namespace tars;
 using namespace TarsTest;
 
-class MyThread : public TC_Thread, public TC_ThreadLock
-{
-public:
-    MyThread()
-    {
-        bTerminate = false;
-    }
-    /**
-     * �����߳�
-     */
-    void terminate()
-    {
-        bTerminate = true;
+class MyThread : public TC_Thread, public TC_ThreadLock {
+ public:
+  MyThread() { bTerminate = false; }
+  /**
+   * �����߳�
+   */
+  void terminate() {
+    bTerminate = true;
 
-        {
-            TC_ThreadLock::Lock sync(*this);
-            notifyAll();
-        }
-    }
-
-    void doSomething()
     {
-        cout << "doSomething" << endl;
+      TC_ThreadLock::Lock sync(*this);
+      notifyAll();
     }
-    /**
-     * ����
-     */
-protected:
-    virtual void run() 
-    {
-        while(!bTerminate)
-        {
-             //TODO: your business
-            doSomething();
+  }
 
-            {
-                TC_ThreadLock::Lock sync(*this);
-                timedWait(1000);
-            }
-        }
+  void doSomething() { cout << "doSomething" << endl; }
+  /**
+   * ����
+   */
+ protected:
+  virtual void run() {
+    while (!bTerminate) {
+      // TODO: your business
+      doSomething();
+
+      {
+        TC_ThreadLock::Lock sync(*this);
+        timedWait(1000);
+      }
     }
+  }
 
-protected:
-    bool bTerminate;
+ protected:
+  bool bTerminate;
 };
 
-TEST(TarsUtilTestcase, UT_TC_Thread)
-{
-    MyThread mt;
-    mt.start();
+TEST(TarsUtilTestcase, UT_TC_Thread) {
+  MyThread mt;
+  mt.start();
 
-    TC_Common::sleep(5);
+  TC_Common::sleep(5);
 
-    mt.terminate();
-    mt.getThreadControl().join();
-
+  mt.terminate();
+  mt.getThreadControl().join();
 }
-
-

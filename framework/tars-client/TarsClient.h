@@ -1,37 +1,32 @@
 #ifndef TARS_CLIENT
 #define TARS_CLIENT
 
-#include "servant/Application.h"
-#include "framework/AdminReg.h"
 #include <functional>
+#include "framework/AdminReg.h"
+#include "servant/Application.h"
 
+class TarsClient {
+ public:
+  typedef std::function<void(TarsClient *, TC_Option &)> command_function;
 
-class TarsClient
-{
-public:
-	typedef std::function<void(TarsClient*, TC_Option&)> command_function;
+  TarsClient(TC_Option &option);
 
-	TarsClient(TC_Option &option);
+  ~TarsClient();
 
-    ~TarsClient();
-	
-	void add(const string &command, command_function func)
-    {
-        _commands[command] = func;
-    }
+  void add(const string &command, command_function func) {
+    _commands[command] = func;
+  }
 
-    Communicator *getCommunicator() { return _comm; }
+  Communicator *getCommunicator() { return _comm; }
 
-    void call(const string &command);
+  void call(const string &command);
 
-protected:
+ protected:
+  TC_Option _option;
 
-    TC_Option _option;
+  map<string, command_function> _commands;
 
-    map<string, command_function> _commands;
-
-	Communicator *_comm;
+  Communicator *_comm;
 };
 
-
-#endif 
+#endif

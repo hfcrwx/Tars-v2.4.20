@@ -10,18 +10,13 @@
 
 TARSTEST_NS_START
 
-ServerAdmin::ServerAdmin()
-{
-	_comm = new Communicator();
-}
-ServerAdmin& ServerAdmin::shutdown(const string& serverName)
-{
-	AdminFPrx adminPrx = _comm->stringToProxy<AdminFPrx> (serverName);
+ServerAdmin::ServerAdmin() { _comm = new Communicator(); }
+ServerAdmin& ServerAdmin::shutdown(const string& serverName) {
+  AdminFPrx adminPrx = _comm->stringToProxy<AdminFPrx>(serverName);
 
-	adminPrx->shutdown();
+  adminPrx->shutdown();
 
-	return *this;
+  return *this;
 }
 
 TARSTEST_NS_END
-

@@ -8,30 +8,28 @@
  *
  *
  */
-class CustomServantImp : public  tars::Servant
-{
-public:
-    /**
-     *
-     */
-    virtual ~CustomServantImp() {}
+class CustomServantImp : public tars::Servant {
+ public:
+  /**
+   *
+   */
+  virtual ~CustomServantImp() {}
 
-    /**
-     *
-     */
-    virtual void initialize();
+  /**
+   *
+   */
+  virtual void initialize();
 
-    /**
-     *
-     */
-    virtual void destroy();
+  /**
+   *
+   */
+  virtual void destroy();
 
-    //overloading method of Servant::doRequest
-    int doRequest(tars::TarsCurrentPtr current, vector<char>& response);
+  // overloading method of Servant::doRequest
+  int doRequest(tars::TarsCurrentPtr current, vector<char>& response);
 
-    //overloading method of Servant::doClose
-    int doClose(tars::TarsCurrentPtr current);
-
+  // overloading method of Servant::doClose
+  int doClose(tars::TarsCurrentPtr current);
 };
 /////////////////////////////////////////////////////
 #endif

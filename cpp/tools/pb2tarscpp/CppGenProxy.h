@@ -8,16 +8,14 @@
 #include <string>
 #include "CppPbUtils.h"
 
-namespace google
-{
+namespace google {
 
-namespace protobuf
-{
+namespace protobuf {
 class ServiceDescriptor;
 }
 
-}
+}  // namespace google
 
 // gen proxy
-std::string GenPrx(const ::google::protobuf::ServiceDescriptor* desc, int indent);
-
+std::string GenPrx(const ::google::protobuf::ServiceDescriptor* desc,
+                   int indent);
