@@ -1,0 +1,2 @@
+
+build_unitest(logServer)
