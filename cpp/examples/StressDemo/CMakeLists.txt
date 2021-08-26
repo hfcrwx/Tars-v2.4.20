@@ -1,5 +1,0 @@
-
-include_directories(TarsStressServer)
-add_subdirectory(TarsStressServer)
-add_subdirectory(TarsStressClient)
-
