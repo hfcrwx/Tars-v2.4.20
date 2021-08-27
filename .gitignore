@@ -68,3 +68,12 @@ framework/tarscpp/unittest/protocol/TarsTest/UnitTest/TarsPingTest.h
 framework/tarscpp/unittest/protocol/TarsTest/UnitTest/TupDemo.h
 framework/tarscpp/unittest/protocol/TarsTest/UnitTest/TypeDemo.h
 framework/tarscpp/unittest/protocol/TarsTest/UnitTest/UserInfo.h
+
+framework/tarscpp/examples/Hello/HelloServer/EXECUTE_PROCESS(COMMAND /
+framework/tarscpp/examples/Hello/HelloServer/src/Hello.h
+framework/tarscpp/examples/Hello/TestHelloClient/.main.d
+framework/tarscpp/examples/Hello/TestHelloClient/TestHelloClient
+framework/tarscpp/examples/Hello/TestHelloClient/main.o
+framework/tarscpp/examples/Hello/TestHelloClientAsync/.main.d
+framework/tarscpp/examples/Hello/TestHelloClientAsync/TestHelloClientAsync
+framework/tarscpp/examples/Hello/TestHelloClientAsync/main.o
