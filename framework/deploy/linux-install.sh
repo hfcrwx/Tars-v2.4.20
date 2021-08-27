@@ -179,7 +179,7 @@ if [ "${SLAVE}" != "true" ]; then
     rm -rf v0.35.1.zip
     #centos8 need chmod a+x
     chmod a+x /usr/bin/unzip
-    wget https://github.com/nvm-sh/nvm/archive/v0.35.1.zip --no-check-certificate;/usr/bin/unzip v0.35.1.zip
+    wget https://github.com/nvm-sh/nvm/archive/refs/tags/v0.35.1.zip --no-check-certificate;/usr/bin/unzip v0.35.1.zip
 
     NVM_HOME=$HOME
 
