@@ -288,7 +288,6 @@ void Communicator::initialize() {
     iAsyncQueueCap = 10000;
   }
 
-  //第一个通信器才去启动回调线程
   for (size_t i = 0; i < _asyncThreadNum; ++i) {
     _asyncThread.push_back(new AsyncProcThread(iAsyncQueueCap, merge));
   }

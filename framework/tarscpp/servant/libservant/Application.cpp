@@ -1212,7 +1212,7 @@ void Application::initializeServer() {
     cout << OUT_LINE << "\nwarning:netThreadNum < 1." << endl;
   }
 
-  //网络线程的配置数目不能15个
+  //网络线程的配置数目不能超过15个
   if (ServerConfig::NetThread > 15) {
     ServerConfig::NetThread = 15;
     cout << OUT_LINE << "\nwarning:netThreadNum > 15." << endl;
@@ -1253,7 +1253,7 @@ void Application::initializeServer() {
       _communicator, ServerConfig::Log);
   _epollServer->setLocalLogger(LocalRollLogger::getInstance()->logger());
 
-  //初始化是日志为同步
+  //初始化时日志为同步
   LocalRollLogger::getInstance()->sync(true);
 
   //设置日志级别

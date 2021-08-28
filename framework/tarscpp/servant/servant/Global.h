@@ -43,10 +43,9 @@ namespace tars {
 //////////////////////////////////////////////////////////////
 
 const size_t MAX_CLIENT_THREAD_NUM = 64;  //客户端最大网络线程数
-const size_t MAX_CLIENT_ASYNCTHREAD_NUM =
-    1024;  //客户端每个网络线程拥有的最大异步线程数
+const size_t MAX_CLIENT_ASYNCTHREAD_NUM = 1024;  //客户端最大异步线程数
 const size_t MAX_CLIENT_NOTIFYEVENT_NUM =
-    2048;  //客户端每个网络线程拥有的最大通知事件的数目
+    2048;  //客户端每个网络线程拥有的最大通知事件的数目，客户端最大caller线程数
 
 //////////////////////////////////////////////////////////////
 class Communicator;

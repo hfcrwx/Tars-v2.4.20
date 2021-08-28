@@ -1737,14 +1737,14 @@ TC_EpollServer::TC_EpollServer(unsigned int iNetThreadNum)
   WSAStartup(MAKEWORD(2, 2), &wsadata);
 #endif
 
-  if (_netThreadNum < 1) {
-    _netThreadNum = 1;
-  }
+  // if (_netThreadNum < 1) {
+  //   _netThreadNum = 1;
+  // }
 
-  //网络线程的配置数目不能15个
-  if (_netThreadNum > 15) {
-    _netThreadNum = 15;
-  }
+  // //网络线程的配置数目不能超过15个
+  // if (_netThreadNum > 15) {
+  //   _netThreadNum = 15;
+  // }
 
   //创建epoll
   _epoller.create(10240);

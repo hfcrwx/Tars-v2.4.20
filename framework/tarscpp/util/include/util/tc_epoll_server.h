@@ -2367,7 +2367,7 @@ class TC_EpollServer : public TC_HandleBase {
   /**
    * epoll
    */
-  TC_Epoller _epoller;
+  TC_Epoller _epoller; // 用于listen
 
   /**
    * 通知epoll
