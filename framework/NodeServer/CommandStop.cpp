@@ -122,16 +122,16 @@ int CommandStop::execute(string& sResult) {
       }
       entrance = entrance == "" ? sServerDir + "/bin/src/index.php" : entrance;
 
-      std::ostringstream osStopStcript;
-      osStopStcript << "#!/bin/sh" << std::endl;
-      osStopStcript << "if [ ! -d \"" << sLogRealPath << "\" ];then mkdir -p \""
+      std::ostringstream osStopScript;
+      osStopScript << "#!/bin/sh" << std::endl;
+      osStopScript << "if [ ! -d \"" << sLogRealPath << "\" ];then mkdir -p \""
                     << sLogRealPath << "\"; fi" << std::endl;
-      osStopStcript << phpexecPath << " " << entrance
+      osStopScript << phpexecPath << " " << entrance
                     << " --config=" << sConfigFile << " stop  >> "
                     << sLogRealPathFile << " 2>&1 " << std::endl;
-      osStopStcript << "echo \"end-tars_stop.sh\"" << std::endl;
+      osStopScript << "echo \"end-tars_stop.sh\"" << std::endl;
 
-      TC_File::save2file(sExePath + "/tars_stop.sh", osStopStcript.str());
+      TC_File::save2file(sExePath + "/tars_stop.sh", osStopScript.str());
       TC_File::setExecutable(sExePath + "/tars_stop.sh", true);
 
       sStopScript = sStopScript == ""

@@ -207,31 +207,31 @@ bool CommandStart::startNormal(string& sResult) {
   }
 
   //生成启动脚本
-  std::ostringstream osStartStcript;
+  std::ostringstream osStartScript;
 #if TARGET_PLATFORM_WINDOWS
   vEnvs.push_back("PATH=%PATH%;" + sExePath + ";" + sLibPath);
 
-  // osStartStcript << "set PATH = %PATH%; /etc/profile" << std::endl;
+  // osStartScript << "set PATH = %PATH%; /etc/profile" << std::endl;
   for (vector<string>::size_type i = 0; i < vEnvs.size(); i++) {
     if (i == 0) {
-      osStartStcript << "set ";
+      osStartScript << "set ";
     }
-    osStartStcript << vEnvs[i] << ";";
+    osStartScript << vEnvs[i] << ";";
   }
-  osStartStcript << endl;
+  osStartScript << endl;
 
 #else
   vEnvs.push_back("LD_LIBRARY_PATH=$LD_LIBRARY_PATH:" + sExePath + ":" +
                   sLibPath);
 
-  osStartStcript << "#!/bin/sh" << std::endl;
-  osStartStcript << "source /etc/profile" << std::endl;
+  osStartScript << "#!/bin/sh" << std::endl;
+  osStartScript << "source /etc/profile" << std::endl;
   for (vector<string>::size_type i = 0; i < vEnvs.size(); i++) {
-    osStartStcript << "export " << vEnvs[i] << std::endl;
+    osStartScript << "export " << vEnvs[i] << std::endl;
   }
 #endif
 
-  osStartStcript << std::endl;
+  osStartScript << std::endl;
   if (_serverObjectPtr->getServerType() == "tars_java") {
     // java服务
     TC_Config conf;
@@ -251,7 +251,7 @@ bool CommandStart::startNormal(string& sResult) {
     vector<string> v = TC_Common::sepstr<string>(s, " \t");
     vOptions.insert(vOptions.end(), v.begin(), v.end());
 
-    osStartStcript << TARS_START << _exeFile << " "
+    osStartScript << TARS_START << _exeFile << " "
                    << TC_Common::tostr(vOptions);
   } else if (_serverObjectPtr->getServerType() == "tars_nodejs") {
     vOptions.push_back(sExePath + FILE_SEP + string("tars_nodejs") + FILE_SEP +
@@ -265,7 +265,7 @@ bool CommandStart::startNormal(string& sResult) {
     _exeFile =
         sExePath + FILE_SEP + string("tars_nodejs") + FILE_SEP + string("node");
 
-    osStartStcript << TARS_START << _exeFile << " "
+    osStartScript << TARS_START << _exeFile << " "
                    << TC_Common::tostr(vOptions);
   } else if (_serverObjectPtr->getServerType() == "tars_php") {
     TC_Config conf;
@@ -276,23 +276,23 @@ bool CommandStart::startNormal(string& sResult) {
 
     vOptions.push_back(entrance);
     vOptions.push_back("--config=" + sConfigFile);
-    osStartStcript << TARS_START << _exeFile << " "
+    osStartScript << TARS_START << _exeFile << " "
                    << TC_Common::tostr(vOptions);
   } else {
     // c++ or go
     vOptions.push_back("--config=" + sConfigFile);
-    osStartStcript << TARS_START << _exeFile << " "
+    osStartScript << TARS_START << _exeFile << " "
                    << TC_Common::tostr(vOptions);
   }
 
 #if !TARGET_PLATFORM_WINDOWS
-  osStartStcript << " &" << endl;
+  osStartScript << " &" << endl;
 #endif
 
   string scriptFile = sExePath + FILE_SEP + TARS_SCRIPT;
 
   //保存启动方式到bin目录供手工启动
-  TC_File::save2file(scriptFile, osStartStcript.str());
+  TC_File::save2file(scriptFile, osStartScript.str());
   TC_File::setExecutable(scriptFile, true);
 
   if (sLogPath != "") {
@@ -345,16 +345,16 @@ bool CommandStart::startNormal(string& sResult) {
 //     } catch (...){}
 //     entrance = entrance=="" ? sServerDir+"/bin/src/index.php" : entrance;
 
-//     std::ostringstream osStartStcript;
-//     osStartStcript << "#!/bin/sh" << std::endl;
-//     osStartStcript << "if [ ! -d \"" << sLogRealPath << "\" ];then mkdir -p
-//     \"" << sLogRealPath << "\"; fi" << std::endl; osStartStcript <<
+//     std::ostringstream osStartScript;
+//     osStartScript << "#!/bin/sh" << std::endl;
+//     osStartScript << "if [ ! -d \"" << sLogRealPath << "\" ];then mkdir -p
+//     \"" << sLogRealPath << "\"; fi" << std::endl; osStartScript <<
 //     phpexecPath << " " << entrance <<" --config=" << sConfigFile << " start
-//     >> " << sLogRealPathFile << " 2>&1 " << std::endl; osStartStcript <<
+//     >> " << sLogRealPathFile << " 2>&1 " << std::endl; osStartScript <<
 //     "echo \"end-tars_start.sh\"" << std::endl;
 
 //     TC_File::save2file(sExePath + FILE_SEP + TARS_SCRIPT,
-//     osStartStcript.str()); TC_File::setExecutable(sExePath + FILE_SEP +
+//     osStartScript.str()); TC_File::setExecutable(sExePath + FILE_SEP +
 //     TARS_SCRIPT, true);
 
 //     int64_t iPid = -1;
