@@ -268,7 +268,7 @@ int HelloImp::testHello(const std::string &sReq, std::string &sRsp, tars::TarsCu
 }
 ```
 
-重新make cleanall;make;make tar，会重新生成HelloServer.tgz发布包。
+重新make clean;make;make tar，会重新生成HelloServer.tgz发布包。
 
 ## 5 <span id="chapter-5"></span> 客户端同步/异步调用服务
 
@@ -276,7 +276,7 @@ int HelloImp::testHello(const std::string &sReq, std::string &sRsp, tars::TarsCu
 
 例如：/home/tarsproto/TestApp/HelloServer在刚才编写服务器的代码目录下，
 
-执行 make release 这时会在/home/tarsproto/TestApp/HelloServer目录下生成h、tars和mk文件。
+执行 make release 这时会在/home/tarsproto/TestApp/HelloServer目录下生成h、tars文件。
 
 这样在有某个服务需要访问HelloServer时，就直接引用HelloServer服务make release的内容，不需要把HelloServer的tars拷贝过来（即代码目录下不需要存放HelloServer的tars文件）。
 
